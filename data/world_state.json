@@ -1,0 +1,201 @@
+{
+  "user_profile": {
+    "user_id": "u_001",
+    "name": "Alex",
+    "age": 35,
+    "occupation": "Software Developer",
+    "location": "San Francisco, CA",
+    "baseline_traits": [
+      "ambitious",
+      "skeptical"
+    ]
+  },
+  "entities": [
+    {
+      "id": "e_001",
+      "name": "Sarah",
+      "type": "person",
+      "domains": [
+        "relationship",
+        "work"
+      ],
+      "salience": "high",
+      "notes": "Alex's girlfriend, works at the same company"
+    },
+    {
+      "id": "e_002",
+      "name": "Fitness Tracker",
+      "type": "object",
+      "domains": [
+        "health",
+        "hobbies"
+      ],
+      "salience": "medium",
+      "notes": "Used irregularly for tracking workouts, lost recently"
+    },
+    {
+      "id": "e_003",
+      "name": "Family Home",
+      "type": "place",
+      "domains": [
+        "family",
+        "logistics"
+      ],
+      "salience": "high",
+      "notes": "Needs renovation, Alex's parents live there"
+    },
+    {
+      "id": "e_004",
+      "name": "Insurance Renewal",
+      "type": "project",
+      "domains": [
+        "finances",
+        "logistics"
+      ],
+      "salience": "low",
+      "notes": "Due in 2 months, not prioritized"
+    },
+    {
+      "id": "e_005",
+      "name": "Car Maintenance",
+      "type": "project",
+      "domains": [
+        "logistics",
+        "habits"
+      ],
+      "salience": "medium",
+      "notes": "Due for oil change, needs new tires (pending)"
+    },
+    {
+      "id": "e_006",
+      "name": "Project X",
+      "type": "project",
+      "domains": [
+        "work",
+        "hobbies"
+      ],
+      "salience": "high",
+      "notes": "Alex's main work project, also a passion"
+    },
+    {
+      "id": "e_007",
+      "name": "Gym Membership",
+      "type": "organization",
+      "domains": [
+        "health",
+        "hobbies"
+      ],
+      "salience": "medium",
+      "notes": "Paid for a year, uses occasionally, not as frequently as planned"
+    },
+    {
+      "id": "e_008",
+      "name": "New Apartment",
+      "type": "project",
+      "domains": [
+        "logistics",
+        "finance"
+      ],
+      "salience": "high",
+      "notes": "Looking to move next year, researching options, budget concerns"
+    },
+    {
+      "id": "e_009",
+      "name": "Meditation App",
+      "type": "object",
+      "domains": [
+        "health",
+        "hobbies"
+      ],
+      "salience": "low",
+      "notes": "Downloaded a few months ago, unused"
+    },
+    {
+      "id": "e_010",
+      "name": "Travel to Europe",
+      "type": "project",
+      "domains": [
+        "travel",
+        "hobbies"
+      ],
+      "salience": "medium",
+      "notes": "Planned for next summer, unsure about the timing"
+    }
+  ],
+  "story_arcs": [
+    {
+      "arc_id": "a_001",
+      "title": "Family Home Renovation",
+      "status": "stalled",
+      "involved_entities": [
+        "e_003"
+      ],
+      "summary": "Renovation plans have been put on hold due to financial constraints and Alex's busy work schedule"
+    },
+    {
+      "arc_id": "a_002",
+      "title": "Project X Completion",
+      "status": "active",
+      "involved_entities": [
+        "e_006"
+      ],
+      "summary": "Alex is working on Project X, but has been struggling with the deadline and feels overwhelmed"
+    },
+    {
+      "arc_id": "a_003",
+      "title": "Move to New Apartment",
+      "status": "planned",
+      "involved_entities": [
+        "e_008"
+      ],
+      "summary": "Alex is considering moving but is unsure about the timing and financial implications"
+    }
+  ],
+  "projects": [
+    {
+      "project_id": "p_001",
+      "title": "Family Home Renovation",
+      "status": "paused",
+      "related_entities": [
+        "e_003"
+      ],
+      "notes": "Renovation plans are on hold, last update was in November"
+    },
+    {
+      "project_id": "p_002",
+      "title": "New Apartment Search",
+      "status": "active",
+      "related_entities": [
+        "e_008"
+      ],
+      "notes": "Ongoing search for a new apartment with a tight budget, last update was in January"
+    },
+    {
+      "project_id": "p_003",
+      "title": "Car Maintenance",
+      "status": "paused",
+      "related_entities": [
+        "e_005"
+      ],
+      "notes": "Needs attention but has been put off due to work stress, last update was in September"
+    }
+  ],
+  "latent_facts": [
+    {
+      "fact_id": "lf_001",
+      "subject": "Alex's parents",
+      "relation": "living arrangement",
+      "object": "e_003",
+      "arc_id": "a_001",
+      "confidence": "assumed"
+    },
+    {
+      "fact_id": "lf_002",
+      "subject": "Sarah's work",
+      "relation": "location",
+      "object": "e_006",
+      "arc_id": "a_002",
+      "confidence": "confirmed"
+    }
+  ]
+}
