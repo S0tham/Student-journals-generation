@@ -1,0 +1,137 @@
+{
+  "events": [
+    {
+      "event_id": "E1",
+      "timestamp": "2023-10-01T09:00:00",
+      "event_type": "routine meeting",
+      "involved_entities": [
+        "e_006",
+        "e_008"
+      ],
+      "story_arc_id": "a_002",
+      "latent_fact_updates": [
+        "Alex discusses progress on Project X with his team, noting increased pressure due to tight deadlines."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E2",
+      "timestamp": "2023-10-05T16:00:00",
+      "event_type": "rescheduled appointment",
+      "involved_entities": [
+        "e_007"
+      ],
+      "story_arc_id": null,
+      "latent_fact_updates": [
+        "Alex cancels his gym membership renewal due to financial constraints."
+      ],
+      "importance": 2
+    },
+    {
+      "event_id": "E3",
+      "timestamp": "2023-10-07T14:30:00",
+      "event_type": "social interaction (in-person)",
+      "involved_entities": [
+        "e_001"
+      ],
+      "story_arc_id": null,
+      "latent_fact_updates": [
+        "Alex and Sarah plan a weekend getaway, but the plans are quickly forgotten."
+      ],
+      "importance": 2
+    },
+    {
+      "event_id": "E4",
+      "timestamp": "2023-10-10T18:15:00",
+      "event_type": "work meeting",
+      "involved_entities": [
+        "e_006"
+      ],
+      "story_arc_id": "a_002",
+      "latent_fact_updates": [
+        "Alex receives feedback on Project X, feeling overwhelmed with the upcoming deadline."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E5",
+      "timestamp": "2023-10-14T19:00:00",
+      "event_type": "routine meeting",
+      "involved_entities": [
+        "e_006",
+        "e_008"
+      ],
+      "story_arc_id": "a_002",
+      "latent_fact_updates": [
+        "Alex discusses potential delays on Project X with his manager, considering a shorter scope."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E6",
+      "timestamp": "2023-10-18T15:45:00",
+      "event_type": "rescheduled appointment",
+      "involved_entities": [
+        "e_005"
+      ],
+      "story_arc_id": null,
+      "latent_fact_updates": [
+        "Alex's car maintenance appointment is rescheduled to next month due to his busy schedule."
+      ],
+      "importance": 2
+    },
+    {
+      "event_id": "E7",
+      "timestamp": "2023-10-22T20:30:00",
+      "event_type": "routine event",
+      "involved_entities": [
+        "e_006"
+      ],
+      "story_arc_id": "a_002",
+      "latent_fact_updates": [
+        "Alex makes progress on Project X but struggles with the complexity, feeling skeptical about completing it on time."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E8",
+      "timestamp": "2023-10-25T16:00:00",
+      "event_type": "social interaction (digital)",
+      "involved_entities": [
+        "e_001"
+      ],
+      "story_arc_id": null,
+      "latent_fact_updates": [
+        "Alex and Sarah video call, catching up on work and personal life."
+      ],
+      "importance": 2
+    },
+    {
+      "event_id": "E9",
+      "timestamp": "2023-10-27T11:45:00",
+      "event_type": "routine event",
+      "involved_entities": [
+        "e_006",
+        "e_008"
+      ],
+      "story_arc_id": "a_002",
+      "latent_fact_updates": [
+        "Alex works late on Project X, feeling ambitious but skeptical about the outcome."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E10",
+      "timestamp": "2023-10-30T14:00:00",
+      "event_type": "routine event",
+      "involved_entities": [
+        "e_006"
+      ],
+      "story_arc_id": null,
+      "latent_fact_updates": [
+        "Alex makes significant progress on Project X, boosting his confidence."
+      ],
+      "importance": 3
+    }
+  ]
+}
