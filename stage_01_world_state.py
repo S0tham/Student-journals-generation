@@ -24,9 +24,6 @@ import re
 import requests
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Config — swap these to change model or endpoint for this stage only
-# ---------------------------------------------------------------------------
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "qwen2.5"
@@ -34,9 +31,6 @@ MODEL = "qwen2.5"
 OUTPUT_DIR = Path("data")
 OUTPUT_FILE = OUTPUT_DIR / "world_state.json"
 
-# ---------------------------------------------------------------------------
-# Prompt — Iman's original, unmodified
-# ---------------------------------------------------------------------------
 
 WORLD_STATE_PROMPT = """You are generating the hidden world state for a synthetic personal knowledge dataset used for retrieval-augmented generation (RAG) evaluation.
 
@@ -194,10 +188,6 @@ Schema:
 }"""
 
 
-# ---------------------------------------------------------------------------
-# Core functions
-# ---------------------------------------------------------------------------
-
 def call_ollama(prompt: str) -> str:
     """Send a prompt to the local Ollama instance and return the response text."""
     payload = {
@@ -230,7 +220,6 @@ def generate_world_state() -> dict:
     print(f"Generating world state via Ollama ({MODEL})...")
     raw_text = call_ollama(WORLD_STATE_PROMPT)
 
-    # Strip markdown code fences if the model added them anyway
     raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
     raw_text = re.sub(r"\s*```$", "", raw_text)
 
@@ -286,10 +275,6 @@ def print_summary(world_state: dict) -> None:
         print(f"    [{arc.get('status', '?'):10s}] {arc.get('arc_id')} — {arc.get('title')}")
     print("─────────────────────────────────────────────────────\n")
 
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 def main():
     world_state = generate_world_state()
