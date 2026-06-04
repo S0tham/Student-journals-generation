@@ -1,0 +1,243 @@
+{
+  "notes": [
+    {
+      "note_id": "N1",
+      "timestamp": "2023-10-01T09:00:00",
+      "note_type": "personal note",
+      "text": "Just had a stressful work meeting about Project X. Feeling overwhelmed by the deadline and Sarah's work is somehow connected to it too... need to talk to her about this ASAP.",
+      "entities": [
+        {
+          "id": "e_006",
+          "name": "Project X"
+        },
+        {
+          "id": "e_008",
+          "name": "New Apartment"
+        },
+        {
+          "id": "e_001",
+          "name": "Sarah"
+        }
+      ],
+      "tags": [
+        "work meeting",
+        "deadline stress"
+      ],
+      "latent_facts": [
+        {
+          "fact_id": "lf_002",
+          "subject": "Project X deadline",
+          "relation": "concerned about",
+          "object": "Sarah's work"
+        }
+      ],
+      "story_arc_id": "a_002",
+      "importance": 3,
+      "source_event_id": "E1"
+    },
+    {
+      "note_id": "n_001",
+      "timestamp": "2023-10-05T16:00:00",
+      "note_type": "personal note",
+      "text": "cancelled gym membership today due to $$$. Been meaning to cut back on expenses anyway... Ugh, still haven't used that thing since the summer.",
+      "entities": [
+        {
+          "id": "e_007"
+        }
+      ],
+      "tags": [
+        "finance",
+        "habits"
+      ],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": "2",
+      "source_event_id": "E2"
+    },
+    {
+      "note_id": "N1",
+      "timestamp": "2023-10-07T14:30:00",
+      "note_type": "Personal Note",
+      "text": "saw sarah today at the coffee shop. we talked about a weekend trip... yeah, that's still happening right? i know i told her to start looking for cheap flights, but umm, details are fuzzy now... need to follow up with her.",
+      "entities": [
+        {
+          "id": "e_001",
+          "type": "person"
+        }
+      ],
+      "tags": [],
+      "latent_facts": [
+        {
+          "fact_id": "lf_3",
+          "subject": "Alex's plans with Sarah",
+          "relation": "travel plans",
+          "object": "e_006",
+          "arc_id": null,
+          "confidence": "assumed"
+        }
+      ],
+      "story_arc_id": null,
+      "importance": 2,
+      "source_event_id": "E3"
+    },
+    {
+      "note_id": "N10",
+      "timestamp": "2023-10-10T18:15:00",
+      "note_type": "personal note",
+      "text": "just got out of the craziest meeting with Sarah, she's been noticing my stress levels re Project X and I'm starting to freak out too... deadline is looming and I don't know how to cram it all in. felt so overwhelmed in the meeting, like I'm gonna burn out if this doesn't get done.",
+      "entities": [
+        {
+          "id": "e_006",
+          "name": "Project X"
+        },
+        {
+          "id": "e_001",
+          "name": "Sarah"
+        }
+      ],
+      "tags": [],
+      "latent_facts": [
+        {
+          "fact_id": "lf_002",
+          "subject": "Alex's work stress levels",
+          "relation": "related to",
+          "object": "Project X",
+          "confidence": "assumed"
+        }
+      ],
+      "story_arc_id": "a_002",
+      "importance": 3,
+      "source_event_id": "E4"
+    },
+    {
+      "note_id": "N1",
+      "timestamp": "2023-10-14T19:00:00",
+      "note_type": "work meeting note",
+      "text": "Just got out of a stressful mtg w/ project x team. Manager said scope needs to shrink, otherwise we'll miss deadline... again. Not sure what this means for my sanity (or the project). Need to look into cutting scope ASAP.",
+      "entities": [
+        {
+          "id": "e_006",
+          "type": "project"
+        }
+      ],
+      "tags": [
+        "work",
+        "deadline"
+      ],
+      "latent_facts": [],
+      "story_arc_id": "a_002",
+      "importance": "medium",
+      "source_event_id": "E5"
+    },
+    {
+      "note_id": "N1",
+      "timestamp": "2023-10-18T15:45:00",
+      "note_type": "personal note",
+      "text": "Ugh, just rescheduled car maintenance for next month... was worried I'd miss deadline for Project X. Sarah's been bugging me to focus on work too.",
+      "entities": [
+        {
+          "id": "e_005",
+          "name": "Car Maintenance"
+        },
+        {
+          "id": "e_006",
+          "name": "Project X"
+        },
+        {
+          "id": "e_001",
+          "name": "Sarah"
+        }
+      ],
+      "tags": [
+        "work",
+        "car maintenance",
+        "project x"
+      ],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": "2",
+      "source_event_id": "E6"
+    },
+    {
+      "note_id": "N1",
+      "timestamp": "2023-10-22T20:30:00",
+      "note_type": "Personal Note",
+      "text": "work meeting on Project X tonight. Still feeling skeptical about deadline but made some progress.",
+      "entities": [
+        {
+          "id": "e_006",
+          "name": "Project X"
+        }
+      ],
+      "tags": [],
+      "latent_facts": [],
+      "story_arc_id": "a_002",
+      "importance": 3,
+      "source_event_id": "E7"
+    },
+    {
+      "note_id": "N001",
+      "timestamp": "2023-10-25T16:00:00",
+      "note_type": "personal note",
+      "text": "just had video call with sarah. she's good, still working on project x with me. talked about the renovation too... yeah, we'll get to it eventually.",
+      "entities": [
+        {
+          "id": "e_001",
+          "name": "Sarah"
+        },
+        {
+          "id": "e_003",
+          "name": "Family Home"
+        },
+        {
+          "id": "e_006",
+          "name": "Project X"
+        }
+      ],
+      "tags": [],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": "2",
+      "source_event_id": "E8"
+    },
+    {
+      "note_id": "N9",
+      "timestamp": "2023-10-27T11:45:00",
+      "note_type": "personal note",
+      "text": "just got out of a grueling Project X meeting... felt like I was getting nowhere, but I guess that's just my skeptical side talking. still haven't figured out how to get the deadline under control. at least Sarah was there and seemed supportive",
+      "entities": [
+        "e_006",
+        "Sarah"
+      ],
+      "tags": [
+        "work",
+        "Project X"
+      ],
+      "latent_facts": [],
+      "story_arc_id": "a_002",
+      "importance": 3,
+      "source_event_id": "E9"
+    },
+    {
+      "note_id": "N10",
+      "timestamp": "2023-10-30T14:00:00",
+      "note_type": "personal note",
+      "text": "made great progress on Project X today, finally feeling like I'm getting somewhere. Sarah was at the meeting too btw.",
+      "entities": [
+        {
+          "id": "e_006",
+          "name": "Project X"
+        },
+        {
+          "id": "e_001",
+          "name": "Sarah"
+        }
+      ],
+      "tags": [],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": 3,
+      "source_event_id": "E10"
+    }
+  ]
+}
