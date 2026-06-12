@@ -1,201 +1,215 @@
 {
   "user_profile": {
     "user_id": "u_001",
-    "name": "Alex",
-    "age": 35,
+    "name": "Ethan Green",
+    "age": 34,
     "occupation": "Software Developer",
-    "location": "San Francisco, CA",
+    "location": "Seattle, WA",
     "baseline_traits": [
-      "ambitious",
-      "skeptical"
+      "Casual",
+      "Mildly Ambitious"
     ]
   },
   "entities": [
     {
-      "id": "e_001",
-      "name": "Sarah",
+      "id": "p_01",
+      "name": "Jane Doe",
       "type": "person",
       "domains": [
-        "relationship",
+        "relationships",
         "work"
       ],
       "salience": "high",
-      "notes": "Alex's girlfriend, works at the same company"
+      "notes": "Ethan's girlfriend, works in finance"
     },
     {
-      "id": "e_002",
-      "name": "Fitness Tracker",
+      "id": "p_02",
+      "name": "Work on Side Project",
+      "type": "project",
+      "domains": [
+        "hobbies",
+        "finances"
+      ],
+      "salience": "medium",
+      "notes": "Ethan has been working on this for months but struggles to find time"
+    },
+    {
+      "id": "p_03",
+      "name": "New Apartment Renovation",
+      "type": "project",
+      "domains": [
+        "home",
+        "finances"
+      ],
+      "salience": "high",
+      "notes": "Ethan has been planning this for a year but hasn't started"
+    },
+    {
+      "id": "p_04",
+      "name": "Family Vacation to Hawaii",
+      "type": "project",
+      "domains": [
+        "hobbies",
+        "travel"
+      ],
+      "salience": "medium",
+      "notes": "Ethan keeps forgetting about this, but wants to do it with his family"
+    },
+    {
+      "id": "p_05",
+      "name": "Gym Membership",
       "type": "object",
       "domains": [
         "health",
-        "hobbies"
-      ],
-      "salience": "medium",
-      "notes": "Used irregularly for tracking workouts, lost recently"
-    },
-    {
-      "id": "e_003",
-      "name": "Family Home",
-      "type": "place",
-      "domains": [
-        "family",
-        "logistics"
-      ],
-      "salience": "high",
-      "notes": "Needs renovation, Alex's parents live there"
-    },
-    {
-      "id": "e_004",
-      "name": "Insurance Renewal",
-      "type": "project",
-      "domains": [
-        "finances",
-        "logistics"
+        "routine"
       ],
       "salience": "low",
-      "notes": "Due in 2 months, not prioritized"
+      "notes": "Ethan signed up for this a few months ago but rarely goes"
     },
     {
-      "id": "e_005",
-      "name": "Car Maintenance",
-      "type": "project",
-      "domains": [
-        "logistics",
-        "habits"
-      ],
-      "salience": "medium",
-      "notes": "Due for oil change, needs new tires (pending)"
-    },
-    {
-      "id": "e_006",
-      "name": "Project X",
-      "type": "project",
+      "id": "p_06",
+      "name": "Tech Conference",
+      "type": "event",
       "domains": [
         "work",
         "hobbies"
       ],
-      "salience": "high",
-      "notes": "Alex's main work project, also a passion"
-    },
-    {
-      "id": "e_007",
-      "name": "Gym Membership",
-      "type": "organization",
-      "domains": [
-        "health",
-        "hobbies"
-      ],
       "salience": "medium",
-      "notes": "Paid for a year, uses occasionally, not as frequently as planned"
+      "notes": "Ethan is supposed to attend this in June but hasn't booked the flight"
     },
     {
-      "id": "e_008",
-      "name": "New Apartment",
+      "id": "p_07",
+      "name": "Mortgage Application",
       "type": "project",
       "domains": [
-        "logistics",
-        "finance"
+        "finances",
+        "home"
       ],
       "salience": "high",
-      "notes": "Looking to move next year, researching options, budget concerns"
+      "notes": "Ethan has been filling out forms for weeks but hasn't submitted anything"
     },
     {
-      "id": "e_009",
-      "name": "Meditation App",
-      "type": "object",
+      "id": "p_08",
+      "name": "Dog Walker",
+      "type": "service",
       "domains": [
-        "health",
-        "hobbies"
+        "routine",
+        "home"
       ],
       "salience": "low",
-      "notes": "Downloaded a few months ago, unused"
+      "notes": "Ethan signed up for this, but has missed a few times"
     },
     {
-      "id": "e_010",
-      "name": "Travel to Europe",
-      "type": "project",
+      "id": "p_09",
+      "name": "Insurance Renewal",
+      "type": "task",
       "domains": [
-        "travel",
-        "hobbies"
+        "finances",
+        "logistics"
       ],
       "salience": "medium",
-      "notes": "Planned for next summer, unsure about the timing"
+      "notes": "Ethan needs to renew this by the end of April"
+    },
+    {
+      "id": "p_10",
+      "name": "Old Apartment Landlord",
+      "type": "person",
+      "domains": [
+        "home",
+        "logistics"
+      ],
+      "salience": "medium",
+      "notes": "Ethan still has to deal with this after moving out"
+    },
+    {
+      "id": "p_11",
+      "name": "New Car Lease",
+      "type": "service",
+      "domains": [
+        "routine",
+        "logistics"
+      ],
+      "salience": "medium",
+      "notes": "Ethan signed up for this but is hesitant to drive it"
+    },
+    {
+      "id": "p_12",
+      "name": "Monthly Budget Tracker",
+      "type": "object",
+      "domains": [
+        "finances",
+        "routine"
+      ],
+      "salience": "low",
+      "notes": "Ethan uses this app but rarely updates it"
     }
   ],
   "story_arcs": [
     {
-      "arc_id": "a_001",
-      "title": "Family Home Renovation",
+      "arc_id": "s_01",
+      "title": "Family Vacation Planning",
       "status": "stalled",
       "involved_entities": [
-        "e_003"
+        "p_04",
+        "p_03"
       ],
-      "summary": "Renovation plans have been put on hold due to financial constraints and Alex's busy work schedule"
+      "summary": "Ethan keeps forgetting about the family vacation, and hasn't made much progress on the new apartment renovation"
     },
     {
-      "arc_id": "a_002",
-      "title": "Project X Completion",
+      "arc_id": "s_02",
+      "title": "Side Project Progress",
       "status": "active",
       "involved_entities": [
-        "e_006"
+        "p_02"
       ],
-      "summary": "Alex is working on Project X, but has been struggling with the deadline and feels overwhelmed"
+      "summary": "Ethan is making steady but slow progress on his side project, which has been a source of mild ambition"
     },
     {
-      "arc_id": "a_003",
-      "title": "Move to New Apartment",
-      "status": "planned",
+      "arc_id": "s_03",
+      "title": "Tech Conference Attendance",
+      "status": "stalled",
       "involved_entities": [
-        "e_008"
+        "p_06"
       ],
-      "summary": "Alex is considering moving but is unsure about the timing and financial implications"
+      "summary": "Ethan keeps forgetting to book the flight for the tech conference in June, but hopes it will happen eventually"
     }
   ],
   "projects": [
     {
-      "project_id": "p_001",
-      "title": "Family Home Renovation",
-      "status": "paused",
-      "related_entities": [
-        "e_003"
-      ],
-      "notes": "Renovation plans are on hold, last update was in November"
-    },
-    {
-      "project_id": "p_002",
-      "title": "New Apartment Search",
+      "project_id": "prj_01",
+      "title": "Side Project",
       "status": "active",
       "related_entities": [
-        "e_008"
+        "p_02"
       ],
-      "notes": "Ongoing search for a new apartment with a tight budget, last update was in January"
+      "notes": "Ethan has been working on this for months but struggles to find time"
     },
     {
-      "project_id": "p_003",
-      "title": "Car Maintenance",
-      "status": "paused",
+      "project_id": "prj_02",
+      "title": "Family Vacation",
+      "status": "stalled",
       "related_entities": [
-        "e_005"
+        "p_04"
       ],
-      "notes": "Needs attention but has been put off due to work stress, last update was in September"
+      "notes": "Ethan keeps forgetting about this, but wants to do it with his family"
     }
   ],
   "latent_facts": [
     {
-      "fact_id": "lf_001",
-      "subject": "Alex's parents",
-      "relation": "living arrangement",
-      "object": "e_003",
-      "arc_id": "a_001",
+      "fact_id": "lf_01",
+      "subject": "p_06",
+      "relation": "will_attend",
+      "object": "Tech Conference",
+      "arc_id": "s_03",
       "confidence": "assumed"
     },
     {
-      "fact_id": "lf_002",
-      "subject": "Sarah's work",
-      "relation": "location",
-      "object": "e_006",
-      "arc_id": "a_002",
-      "confidence": "confirmed"
+      "fact_id": "lf_02",
+      "subject": "p_04",
+      "relation": "will_happen",
+      "object": "Family Vacation to Hawaii",
+      "arc_id": "s_01",
+      "confidence": "assumed"
     }
   ]
 }

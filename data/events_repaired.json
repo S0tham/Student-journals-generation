@@ -1,135 +1,144 @@
 {
   "events": [
     {
-      "event_id": "E1",
-      "timestamp": "2023-10-01T09:00:00",
-      "event_type": "work meeting",
-      "involved_entities": [
-        "e_006",
-        "e_008"
-      ],
-      "story_arc_id": "a_002",
-      "latent_fact_updates": [
-        "Alex discusses progress on Project X with his team, noting increased pressure due to tight deadlines."
-      ],
-      "importance": 3
-    },
-    {
-      "event_id": "E2",
-      "timestamp": "2023-10-05T16:00:00",
-      "event_type": "appointment cancellation",
-      "involved_entities": [
-        "e_007"
-      ],
+      "event_id": "E_202401030930",
+      "timestamp": "2024-01-03T09:30:00",
+      "primary_entity": "p_05",
       "story_arc_id": null,
+      "involved_entities": [
+        "p_05"
+      ],
+      "text": "Ethan visited the gym for the first time in weeks.",
       "latent_fact_updates": [
-        "Alex cancels his gym membership renewal due to financial constraints."
+        "Ethan starts to feel more committed to his gym membership."
       ],
       "importance": 2
     },
     {
-      "event_id": "E3",
-      "timestamp": "2023-10-07T14:30:00",
-      "event_type": "social interaction (in-person)",
+      "event_id": "E_202401031600",
+      "timestamp": "2024-01-03T16:00:00",
+      "primary_entity": "p_06",
+      "story_arc_id": "s_03",
       "involved_entities": [
-        "e_001"
+        "p_06"
       ],
-      "story_arc_id": null,
+      "text": "Ethan booked a flight to the tech conference in June.",
       "latent_fact_updates": [
-        "Alex and Sarah plan a weekend getaway, but the plans are quickly forgotten."
+        "Ethan is now more confident about attending the tech conference."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E_202401040800",
+      "timestamp": "2024-01-04T08:00:00",
+      "primary_entity": "p_04",
+      "story_arc_id": "s_01",
+      "involved_entities": [
+        "p_04"
+      ],
+      "text": "Ethan started planning the family vacation to Hawaii.",
+      "latent_fact_updates": [
+        "Ethan starts to feel more excited about the upcoming family vacation."
       ],
       "importance": 2
     },
     {
-      "event_id": "E4",
-      "timestamp": "2023-10-10T18:15:00",
-      "event_type": "work meeting",
-      "involved_entities": [
-        "e_006"
-      ],
-      "story_arc_id": "a_002",
-      "latent_fact_updates": [
-        "Alex receives feedback on Project X, feeling overwhelmed with the upcoming deadline."
-      ],
-      "importance": 3
-    },
-    {
-      "event_id": "E5",
-      "timestamp": "2023-10-14T19:00:00",
-      "event_type": "work meeting",
-      "involved_entities": [
-        "e_006"
-      ],
-      "story_arc_id": "a_002",
-      "latent_fact_updates": [
-        "Alex discusses potential delays on Project X with his manager, considering a shorter scope."
-      ],
-      "importance": 3
-    },
-    {
-      "event_id": "E6",
-      "timestamp": "2023-10-18T15:45:00",
-      "event_type": "appointment rescheduling",
-      "involved_entities": [
-        "e_005"
-      ],
+      "event_id": "E_202401051130",
+      "timestamp": "2024-01-05T11:30:00",
+      "primary_entity": "p_07",
       "story_arc_id": null,
+      "involved_entities": [
+        "p_07"
+      ],
+      "text": "Ethan filled out more forms for the mortgage application.",
       "latent_fact_updates": [
-        "Alex's car maintenance appointment is rescheduled to next month due to his busy schedule."
+        "Ethan is still procrastinating on submitting his mortgage application."
+      ],
+      "importance": 1
+    },
+    {
+      "event_id": "E_202401061300",
+      "timestamp": "2024-01-06T13:00:00",
+      "primary_entity": "p_03",
+      "story_arc_id": "s_01",
+      "involved_entities": [
+        "p_03"
+      ],
+      "text": "Ethan made some progress on the apartment renovation plans.",
+      "latent_fact_updates": [
+        "Ethan feels somewhat guilty for not making more progress."
       ],
       "importance": 2
     },
     {
-      "event_id": "E7",
-      "timestamp": "2023-10-22T20:30:00",
-      "event_type": "work meeting",
+      "event_id": "E_202401071530",
+      "timestamp": "2024-01-07T15:30:00",
+      "primary_entity": "p_09",
+      "story_arc_id": null,
       "involved_entities": [
-        "e_006"
+        "p_09"
       ],
-      "story_arc_id": "a_002",
+      "text": "Ethan tried to renew his insurance but couldn't find the renewal portal.",
       "latent_fact_updates": [
-        "Alex makes progress on Project X but struggles with the complexity, feeling skeptical about completing it on time."
+        "Ethan is frustrated with the difficulty of renewing his insurance."
+      ],
+      "importance": 1
+    },
+    {
+      "event_id": "E_202401080900",
+      "timestamp": "2024-01-08T09:00:00",
+      "primary_entity": "p_06",
+      "story_arc_id": "s_03",
+      "involved_entities": [
+        "p_06"
+      ],
+      "text": "Ethan rescheduled his flight to the tech conference due to a work emergency.",
+      "latent_fact_updates": [
+        "Ethan is disappointed he can't attend the tech conference as originally planned."
       ],
       "importance": 3
     },
     {
-      "event_id": "E8",
-      "timestamp": "2023-10-25T16:00:00",
-      "event_type": "social interaction (digital)",
-      "involved_entities": [
-        "e_001"
-      ],
+      "event_id": "E_202401091600",
+      "timestamp": "2024-01-09T16:00:00",
+      "primary_entity": "p_07",
       "story_arc_id": null,
+      "involved_entities": [
+        "p_07"
+      ],
+      "text": "Ethan submitted the mortgage application.",
       "latent_fact_updates": [
-        "Alex and Sarah video call, catching up on work and personal life."
+        "Ethan feels a sense of relief about having completed his mortgage application."
       ],
       "importance": 2
     },
-  {
-      "event_id": "E9",
-      "timestamp": "2023-10-27T11:45:00",
-      "event_type": "work meeting",
+    {
+      "event_id": "E_202401101030",
+      "timestamp": "2024-01-10T10:30:00",
+      "primary_entity": "p_08",
+      "story_arc_id": null,
       "involved_entities": [
-        "e_006"
+        "p_08"
       ],
-      "story_arc_id": "a_002",
+      "text": "Ethan forgot to walk his dog again.",
       "latent_fact_updates": [
-        "Alex works late on Project X, feeling ambitious but skeptical about the outcome."
+        "Ethan feels a bit guilty for missing the dog walking appointment."
       ],
-      "importance": 3
+      "importance": 1
     },
     {
-      "event_id": "E10",
-      "timestamp": "2023-10-30T14:00:00",
-      "event_type": "work meeting",
+      "event_id": "E_202401111300",
+      "timestamp": "2024-01-11T13:00:00",
+      "primary_entity": "p_03",
+      "story_arc_id": "s_01",
       "involved_entities": [
-        "e_006"
+        "p_03"
       ],
-      "story_arc_id": null,
+      "text": "Ethan decided to postpone the apartment renovation plans indefinitely.",
       "latent_fact_updates": [
-        "Alex makes significant progress on Project X, boosting his confidence."
+        "Ethan is feeling overwhelmed with other commitments."
       ],
-      "importance": 3
+      "importance": 2
     }
   ]
 }

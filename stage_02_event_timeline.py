@@ -32,7 +32,7 @@ INPUT_FILE  = Path("data") / "world_state.json"
 OUTPUT_FILE = Path("data") / "events_raw.json"
 
 
-EVENT_TIMELINE_PROMPT = """Using the provided world state, generate a 30-day timeline of events.
+EVENT_TIMELINE_PROMPT = """Using the provided world state, generate a 10-day timeline of events.
 
 You are simulating a noisy, partially incomplete human memory system, not a narrative story.
 
@@ -164,16 +164,22 @@ def call_ollama(prompt: str) -> str:
         raise TimeoutError("Ollama took too long to respond (>500s). Try a smaller model.")
 
 
-def build_prompt(world_state: dict) -> str:
-    """Inject the world state into the prompt as context."""
+def build_prompt(world_state: dict, skeletons: list) -> str:
+    """Inject the world state and pre-built skeletons into the prompt."""
     world_state_json = json.dumps(world_state, indent=2, ensure_ascii=False)
-    return f"World state:\n{world_state_json}\n\n{EVENT_TIMELINE_PROMPT}"
+    skeletons_json   = json.dumps(skeletons, indent=2, ensure_ascii=False)
+    return (
+        f"World state:\n{world_state_json}\n\n"
+        f"Event skeletons (structure is fixed — only write the 'text' and 'latent_fact_updates' and 'importance' fields):\n"
+        f"{skeletons_json}\n\n"
+        f"{EVENT_TIMELINE_PROMPT}"
+    )
 
 
-def generate_events(world_state: dict) -> dict:
-    """Call Ollama with the world state and return the parsed events dict."""
-    print(f"Generating event timeline via Ollama ({MODEL})...")
-    prompt = build_prompt(world_state)
+def generate_events(world_state: dict, skeletons: list) -> dict:
+    """Call Ollama with the world state + skeletons and return the parsed events dict."""
+    print(f"Generating event text via Ollama ({MODEL})...")
+    prompt = build_prompt(world_state, skeletons)
     raw_text = call_ollama(prompt)
 
     raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
@@ -195,7 +201,7 @@ def validate_events(events_data: dict, world_state: dict) -> list[str]:
         return warnings
 
     if len(events) < 10:
-        warnings.append(f"Only {len(events)} events — expected ~15-25 for a 30-day timeline")
+        warnings.append(f"Only {len(events)} events — expected ~15-25 for a 10-day timeline")
 
     valid_entity_ids = {e.get("id") for e in world_state.get("entities", [])}
     valid_arc_ids    = {a.get("arc_id") for a in world_state.get("story_arcs", [])}
@@ -283,12 +289,25 @@ def print_summary(events_data: dict) -> None:
 
 
 def main():
+    from knowledge_graph import load_graph, build_timeline_skeletons
+    from datetime import datetime
+
     world_state = load_world_state(INPUT_FILE)
     print(f"Loaded world state: {world_state['user_profile'].get('name')}, "
           f"{len(world_state.get('entities', []))} entities, "
           f"{len(world_state.get('story_arcs', []))} arcs")
 
-    events_data = generate_events(world_state)
+    G = load_graph(world_state)
+    print("Building event skeletons via knowledge graph...")
+    skeletons = build_timeline_skeletons(
+        G,
+        start_date=datetime(2024, 1, 1, 9, 0),
+        duration_days=10,
+        events_per_day=0.8,
+    )
+    print(f"  {len(skeletons)} skeletons generated.")
+
+    events_data = generate_events(world_state, skeletons)
 
     warnings = validate_events(events_data, world_state)
     if warnings:

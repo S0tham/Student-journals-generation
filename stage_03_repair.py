@@ -260,22 +260,30 @@ def print_summary(repair_log: list[str], events_before: int, events_after: int) 
     print("─────────────────────────────────────────────────────\n")
 
 def main():
+    from knowledge_graph import load_graph, GraphValidator
+
     world_state  = load_json(WORLD_STATE_FILE, "World state")
     events_data  = load_json(INPUT_FILE, "Raw events")
     raw_events   = events_data.get("events", [])
 
     print(f"Loaded {len(raw_events)} raw events.")
 
-    print("Pass 1: rule-based repair...")
-    pre_repaired, repair_log = rule_based_repair(raw_events, world_state)
-    print(f"  {len(repair_log)} rule-based fixes applied.")
+    G         = load_graph(world_state)
+    validator = GraphValidator(G)
 
-    print("Pass 2: LLM semantic repair...")
-    llm_repaired = llm_repair(pre_repaired, world_state)
+    print("Running graph-based repair...")
+    final_events = []
+    repair_log   = []
 
-    final_events = strip_repair_logs(llm_repaired)
+    for event in raw_events:
+        repaired, log = validator.repair_event(event)
+        final_events.append(repaired)
+        repair_log.extend(log)
 
-    warnings = validate_events(final_events, world_state)
+    if repair_log:
+        print(f"  {len(repair_log)} fixes applied.")
+
+    warnings = validator.validate_timeline(final_events)
     if warnings:
         print(f"\n⚠️  Remaining issues after repair ({len(warnings)}):")
         for w in warnings:

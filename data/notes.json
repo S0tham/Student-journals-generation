@@ -1,243 +1,231 @@
 {
   "notes": [
     {
-      "note_id": "N1",
-      "timestamp": "2023-10-01T09:00:00",
+      "note_id": "N_202401030930",
+      "timestamp": "2024-01-03T09:30:00",
       "note_type": "personal note",
-      "text": "Just had a stressful work meeting about Project X. Feeling overwhelmed by the deadline and Sarah's work is somehow connected to it too... need to talk to her about this ASAP.",
+      "text": "finally went to the gym, been so lazy about this...",
       "entities": [
         {
-          "id": "e_006",
-          "name": "Project X"
-        },
-        {
-          "id": "e_008",
-          "name": "New Apartment"
-        },
-        {
-          "id": "e_001",
-          "name": "Sarah"
+          "id": "p_05",
+          "type": "object"
         }
       ],
       "tags": [
-        "work meeting",
-        "deadline stress"
-      ],
-      "latent_facts": [
-        {
-          "fact_id": "lf_002",
-          "subject": "Project X deadline",
-          "relation": "concerned about",
-          "object": "Sarah's work"
-        }
-      ],
-      "story_arc_id": "a_002",
-      "importance": 3,
-      "source_event_id": "E1"
-    },
-    {
-      "note_id": "n_001",
-      "timestamp": "2023-10-05T16:00:00",
-      "note_type": "personal note",
-      "text": "cancelled gym membership today due to $$$. Been meaning to cut back on expenses anyway... Ugh, still haven't used that thing since the summer.",
-      "entities": [
-        {
-          "id": "e_007"
-        }
-      ],
-      "tags": [
-        "finance",
-        "habits"
+        "gym",
+        "exercise"
       ],
       "latent_facts": [],
       "story_arc_id": null,
-      "importance": "2",
-      "source_event_id": "E2"
+      "importance": 2,
+      "source_event_id": "E_202401030930"
     },
     {
-      "note_id": "N1",
-      "timestamp": "2023-10-07T14:30:00",
-      "note_type": "Personal Note",
-      "text": "saw sarah today at the coffee shop. we talked about a weekend trip... yeah, that's still happening right? i know i told her to start looking for cheap flights, but umm, details are fuzzy now... need to follow up with her.",
+      "note_id": "E_202401031600_note",
+      "timestamp": "2024-01-03T16:00:00",
+      "note_type": "personal",
+      "text": "Just booked flight to tech conference in June...finally. Fingers crossed it'll actually happen this time.",
       "entities": [
         {
-          "id": "e_001",
-          "type": "person"
+          "id": "p_06",
+          "type": "event"
+        }
+      ],
+      "tags": [
+        "tech_conference",
+        "June"
+      ],
+      "latent_facts": [],
+      "story_arc_id": "s_03",
+      "importance": 3,
+      "source_event_id": "E_202401031600"
+    },
+    {
+      "note_id": "N_202401040800",
+      "timestamp": "2024-01-04T08:00:00",
+      "note_type": "Personal Note",
+      "text": "just started planning the family vacation to hawaii... finally! been putting it off for ages. need to start booking flights and stuff soon...",
+      "entities": [
+        "p_04",
+        "p_03"
+      ],
+      "tags": [],
+      "latent_facts": [
+        {
+          "fact_id": "lf_02",
+          "subject": "p_04",
+          "relation": "will_happen",
+          "object": "Family Vacation to Hawaii",
+          "arc_id": "s_01",
+          "confidence": "assumed"
+        }
+      ],
+      "story_arc_id": "s_01",
+      "importance": 2,
+      "source_event_id": "E_202401040800"
+    },
+    {
+      "note_id": "N_202401051130",
+      "timestamp": "2024-01-05T11:30:00",
+      "note_type": "Personal Note",
+      "text": "Ugh, been working on mortgage app for weeks now. Still can't seem to submit anything... gonna have to get on top of this.",
+      "entities": [
+        "p_07"
+      ],
+      "tags": [
+        "procrastination",
+        "mortgage"
+      ],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": 2,
+      "source_event_id": "E_202401051130"
+    },
+    {
+      "note_id": "N_202401061300",
+      "timestamp": "2024-01-06T13:00:00",
+      "note_type": "personal",
+      "text": "Ugh, I finally made some progress on the apartment renovation plans. Been putting it off for ages. Maybe I can convince Jane to help me with the permits?",
+      "entities": [
+        {
+          "id": "p_03",
+          "type": "project",
+          "name": "New Apartment Renovation"
+        },
+        {
+          "id": "p_01",
+          "type": "person",
+          "name": "Jane Doe"
         }
       ],
       "tags": [],
       "latent_facts": [
         {
-          "fact_id": "lf_3",
-          "subject": "Alex's plans with Sarah",
-          "relation": "travel plans",
-          "object": "e_006",
-          "arc_id": null,
+          "fact_id": "lf_03",
+          "subject": "Ethan Green",
+          "relation": "feels_guilty",
+          "object": "apartment renovation plans",
           "confidence": "assumed"
+        }
+      ],
+      "story_arc_id": "s_01",
+      "importance": 2,
+      "source_event_id": "E_202401061300"
+    },
+    {
+      "note_id": "E_202401071530",
+      "timestamp": "2024-01-07T15:30:00",
+      "note_type": "personal note",
+      "text": "Renewal nightmare. Can't find portal. Ugh.",
+      "entities": [
+        "p_09"
+      ],
+      "tags": [
+        "insurance renewal",
+        "frustrating"
+      ],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": 1,
+      "source_event_id": "E_202401071530"
+    },
+    {
+      "note_id": "N_20240108",
+      "timestamp": "Jan 8, 2024",
+      "note_type": "personal",
+      "text": "uh-oh, just rescheduled my flight to the tech conference... work emergency. really wanted to get this done but I guess it'll have to wait. hope Jane isn't counting on me being there.",
+      "entities": [
+        {
+          "id": "p_06"
+        },
+        {
+          "id": "s_03"
+        }
+      ],
+      "tags": [
+        "tech conference",
+        "work emergency"
+      ],
+      "latent_facts": [],
+      "story_arc_id": "s_03",
+      "importance": "medium",
+      "source_event_id": "E_202401080900"
+    },
+    {
+      "note_id": "N_202401091600",
+      "timestamp": "2024-01-09T16:00:00",
+      "note_type": "personal note",
+      "text": "finally submitted the mortgage app. been messing around with that for weeks... ugh, paperwork is a nightmare. hope it goes through ok.",
+      "entities": [
+        {
+          "id": "p_07"
+        }
+      ],
+      "tags": [],
+      "latent_facts": [],
+      "story_arc_id": null,
+      "importance": "high",
+      "source_event_id": "E_202401091600"
+    },
+    {
+      "note_id": "N_202401101030",
+      "timestamp": "2024-01-10T10:30:00",
+      "note_type": "personal_note",
+      "text": "Ugh, forgot to walk the dog AGAIN. Been meaning to get my routine together but still can't stick to it. At least I have a gym membership somewhere... ",
+      "entities": [
+        {
+          "id": "p_08",
+          "name": "Dog Walker"
+        }
+      ],
+      "tags": [
+        "routine",
+        "guilt"
+      ],
+      "latent_facts": [
+        {
+          "fact_id": "lf_03",
+          "subject": "Ethan",
+          "relation": "feels_guilty",
+          "object": "missing dog walking appointment",
+          "confidence": "high"
         }
       ],
       "story_arc_id": null,
       "importance": 2,
-      "source_event_id": "E3"
+      "source_event_id": "E_202401101030"
     },
     {
-      "note_id": "N10",
-      "timestamp": "2023-10-10T18:15:00",
+      "note_id": "N_202401111300",
+      "timestamp": "Jan 11, 2pm",
       "note_type": "personal note",
-      "text": "just got out of the craziest meeting with Sarah, she's been noticing my stress levels re Project X and I'm starting to freak out too... deadline is looming and I don't know how to cram it all in. felt so overwhelmed in the meeting, like I'm gonna burn out if this doesn't get done.",
+      "text": "Ugh, postponed the apartment renovation plans. Don't know if it'll ever happen now.",
       "entities": [
         {
-          "id": "e_006",
-          "name": "Project X"
-        },
-        {
-          "id": "e_001",
-          "name": "Sarah"
+          "id": "p_03",
+          "type": "project",
+          "name": "New Apartment Renovation"
         }
       ],
-      "tags": [],
+      "tags": [
+        "apartment",
+        "renovation"
+      ],
       "latent_facts": [
         {
-          "fact_id": "lf_002",
-          "subject": "Alex's work stress levels",
-          "relation": "related to",
-          "object": "Project X",
-          "confidence": "assumed"
-        }
-      ],
-      "story_arc_id": "a_002",
-      "importance": 3,
-      "source_event_id": "E4"
-    },
-    {
-      "note_id": "N1",
-      "timestamp": "2023-10-14T19:00:00",
-      "note_type": "work meeting note",
-      "text": "Just got out of a stressful mtg w/ project x team. Manager said scope needs to shrink, otherwise we'll miss deadline... again. Not sure what this means for my sanity (or the project). Need to look into cutting scope ASAP.",
-      "entities": [
-        {
-          "id": "e_006",
-          "type": "project"
-        }
-      ],
-      "tags": [
-        "work",
-        "deadline"
-      ],
-      "latent_facts": [],
-      "story_arc_id": "a_002",
-      "importance": "medium",
-      "source_event_id": "E5"
-    },
-    {
-      "note_id": "N1",
-      "timestamp": "2023-10-18T15:45:00",
-      "note_type": "personal note",
-      "text": "Ugh, just rescheduled car maintenance for next month... was worried I'd miss deadline for Project X. Sarah's been bugging me to focus on work too.",
-      "entities": [
-        {
-          "id": "e_005",
-          "name": "Car Maintenance"
+          "fact_id": "lf_01",
+          "relation": "feeling_overwhelmed",
+          "object": ""
         },
         {
-          "id": "e_006",
-          "name": "Project X"
-        },
-        {
-          "id": "e_001",
-          "name": "Sarah"
+          "fact_id": "lf_02",
+          "relation": "lack_of_progress",
+          "object": "Family Vacation to Hawaii"
         }
       ],
-      "tags": [
-        "work",
-        "car maintenance",
-        "project x"
-      ],
-      "latent_facts": [],
-      "story_arc_id": null,
-      "importance": "2",
-      "source_event_id": "E6"
-    },
-    {
-      "note_id": "N1",
-      "timestamp": "2023-10-22T20:30:00",
-      "note_type": "Personal Note",
-      "text": "work meeting on Project X tonight. Still feeling skeptical about deadline but made some progress.",
-      "entities": [
-        {
-          "id": "e_006",
-          "name": "Project X"
-        }
-      ],
-      "tags": [],
-      "latent_facts": [],
-      "story_arc_id": "a_002",
-      "importance": 3,
-      "source_event_id": "E7"
-    },
-    {
-      "note_id": "N001",
-      "timestamp": "2023-10-25T16:00:00",
-      "note_type": "personal note",
-      "text": "just had video call with sarah. she's good, still working on project x with me. talked about the renovation too... yeah, we'll get to it eventually.",
-      "entities": [
-        {
-          "id": "e_001",
-          "name": "Sarah"
-        },
-        {
-          "id": "e_003",
-          "name": "Family Home"
-        },
-        {
-          "id": "e_006",
-          "name": "Project X"
-        }
-      ],
-      "tags": [],
-      "latent_facts": [],
-      "story_arc_id": null,
-      "importance": "2",
-      "source_event_id": "E8"
-    },
-    {
-      "note_id": "N9",
-      "timestamp": "2023-10-27T11:45:00",
-      "note_type": "personal note",
-      "text": "just got out of a grueling Project X meeting... felt like I was getting nowhere, but I guess that's just my skeptical side talking. still haven't figured out how to get the deadline under control. at least Sarah was there and seemed supportive",
-      "entities": [
-        "e_006",
-        "Sarah"
-      ],
-      "tags": [
-        "work",
-        "Project X"
-      ],
-      "latent_facts": [],
-      "story_arc_id": "a_002",
-      "importance": 3,
-      "source_event_id": "E9"
-    },
-    {
-      "note_id": "N10",
-      "timestamp": "2023-10-30T14:00:00",
-      "note_type": "personal note",
-      "text": "made great progress on Project X today, finally feeling like I'm getting somewhere. Sarah was at the meeting too btw.",
-      "entities": [
-        {
-          "id": "e_006",
-          "name": "Project X"
-        },
-        {
-          "id": "e_001",
-          "name": "Sarah"
-        }
-      ],
-      "tags": [],
-      "latent_facts": [],
-      "story_arc_id": null,
-      "importance": 3,
-      "source_event_id": "E10"
+      "story_arc_id": "s_01",
+      "importance": "high",
+      "source_event_id": "E_202401111300"
     }
   ]
 }
