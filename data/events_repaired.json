@@ -1,142 +1,158 @@
 {
   "events": [
     {
-      "event_id": "E_202401030930",
-      "timestamp": "2024-01-03T09:30:00",
-      "primary_entity": "p_05",
-      "story_arc_id": null,
+      "event_id": "E_202401010900",
+      "timestamp": "2024-01-01T09:00:00",
+      "story_arc_id": "a_003",
       "involved_entities": [
-        "p_05"
+        "p_013"
       ],
-      "text": "Ethan visited the gym for the first time in weeks.",
       "latent_fact_updates": [
-        "Ethan starts to feel more committed to his gym membership."
+        "Ethan's mother advises Ethan to prioritize work over home maintenance for now."
       ],
       "importance": 2
     },
     {
-      "event_id": "E_202401031600",
-      "timestamp": "2024-01-03T16:00:00",
-      "primary_entity": "p_06",
-      "story_arc_id": "s_03",
+      "event_id": "E_202401021430",
+      "timestamp": "2024-01-02T14:30:01.213113",
+      "story_arc_id": "a_002",
       "involved_entities": [
-        "p_06"
+        "p_002"
       ],
-      "text": "Ethan booked a flight to the tech conference in June.",
       "latent_fact_updates": [
-        "Ethan is now more confident about attending the tech conference."
+        "Tom suggests a team meeting to discuss the work project."
       ],
       "importance": 3
     },
     {
-      "event_id": "E_202401040800",
-      "timestamp": "2024-01-04T08:00:00",
-      "primary_entity": "p_04",
-      "story_arc_id": "s_01",
+      "event_id": "E_202401021723",
+      "timestamp": "2024-01-02T17:23:28.285906",
+      "story_arc_id": "a_001",
       "involved_entities": [
-        "p_04"
+        "p_013"
       ],
-      "text": "Ethan started planning the family vacation to Hawaii.",
       "latent_fact_updates": [
-        "Ethan starts to feel more excited about the upcoming family vacation."
+        "Ethan's mother mentions Ethan has been neglecting his health."
+      ],
+      "importance": 4
+    },
+    {
+      "event_id": "E_202401021941",
+      "timestamp": "2024-01-02T19:41:05.912575",
+      "story_arc_id": "a_003",
+      "involved_entities": [
+        "p_014"
+      ],
+      "latent_fact_updates": [
+        "Ethan visits his childhood home to fix the leaky faucet."
       ],
       "importance": 2
     },
     {
-      "event_id": "E_202401051130",
-      "timestamp": "2024-01-05T11:30:00",
-      "primary_entity": "p_07",
-      "story_arc_id": null,
+      "event_id": "E_202401031704",
+      "timestamp": "2024-01-03T17:04:58.936365",
+      "story_arc_id": "a_002",
       "involved_entities": [
-        "p_07"
+        "p_006"
       ],
-      "text": "Ethan filled out more forms for the mortgage application.",
       "latent_fact_updates": [
-        "Ethan is still procrastinating on submitting his mortgage application."
-      ],
-      "importance": 1
-    },
-    {
-      "event_id": "E_202401061300",
-      "timestamp": "2024-01-06T13:00:00",
-      "primary_entity": "p_03",
-      "story_arc_id": "s_01",
-      "involved_entities": [
-        "p_03"
-      ],
-      "text": "Ethan made some progress on the apartment renovation plans.",
-      "latent_fact_updates": [
-        "Ethan feels somewhat guilty for not making more progress."
-      ],
-      "importance": 2
-    },
-    {
-      "event_id": "E_202401071530",
-      "timestamp": "2024-01-07T15:30:00",
-      "primary_entity": "p_09",
-      "story_arc_id": null,
-      "involved_entities": [
-        "p_09"
-      ],
-      "text": "Ethan tried to renew his insurance but couldn't find the renewal portal.",
-      "latent_fact_updates": [
-        "Ethan is frustrated with the difficulty of renewing his insurance."
-      ],
-      "importance": 1
-    },
-    {
-      "event_id": "E_202401080900",
-      "timestamp": "2024-01-08T09:00:00",
-      "primary_entity": "p_06",
-      "story_arc_id": "s_03",
-      "involved_entities": [
-        "p_06"
-      ],
-      "text": "Ethan rescheduled his flight to the tech conference due to a work emergency.",
-      "latent_fact_updates": [
-        "Ethan is disappointed he can't attend the tech conference as originally planned."
+        "Ethan books a flight to attend the work project meeting."
       ],
       "importance": 3
     },
     {
-      "event_id": "E_202401091600",
-      "timestamp": "2024-01-09T16:00:00",
-      "primary_entity": "p_07",
-      "story_arc_id": null,
+      "event_id": "E_202401031752",
+      "timestamp": "2024-01-03T17:52:37.890009",
+      "story_arc_id": "a_001",
       "involved_entities": [
-        "p_07"
+        "p_004"
       ],
-      "text": "Ethan submitted the mortgage application.",
       "latent_fact_updates": [
-        "Ethan feels a sense of relief about having completed his mortgage application."
+        "Ethan decides to renew his gym membership."
       ],
       "importance": 2
     },
     {
-      "event_id": "E_202401101030",
-      "timestamp": "2024-01-10T10:30:00",
-      "primary_entity": "p_08",
-      "story_arc_id": null,
+      "event_id": "E_202401041337",
+      "timestamp": "2024-01-04T13:37:31.861106",
+      "story_arc_id": "a_002",
       "involved_entities": [
-        "p_08"
+        "p_005"
       ],
-      "text": "Ethan forgot to walk his dog again.",
       "latent_fact_updates": [
-        "Ethan feels a bit guilty for missing the dog walking appointment."
+        "Ethan schedules a home maintenance task for the weekend."
       ],
-      "importance": 1
+      "importance": 2
     },
     {
-      "event_id": "E_202401111300",
-      "timestamp": "2024-01-11T13:00:00",
-      "primary_entity": "p_03",
-      "story_arc_id": "s_01",
+      "event_id": "E_202401051709",
+      "timestamp": "2024-01-05T17:09:25.886227",
+      "story_arc_id": "a_003",
       "involved_entities": [
-        "p_03"
+        "p_006"
       ],
-      "text": "Ethan decided to postpone the apartment renovation plans indefinitely.",
       "latent_fact_updates": [
-        "Ethan is feeling overwhelmed with other commitments."
+        "Ethan realizes he needs to reschedule the flight due to work."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E_202401061547",
+      "timestamp": "2024-01-06T15:47:18.912575",
+      "story_arc_id": "a_001",
+      "involved_entities": [
+        "p_013"
+      ],
+      "latent_fact_updates": [
+        "Ethan's mother recommends a new health app to Ethan."
+      ],
+      "importance": 4
+    },
+    {
+      "event_id": "E_202401071025",
+      "timestamp": "2024-01-07T10:25:31.861106",
+      "story_arc_id": "a_002",
+      "involved_entities": [
+        "p_002"
+      ],
+      "latent_fact_updates": [
+        "Ethan reschedules the work project meeting for next week."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E_202401081956",
+      "timestamp": "2024-01-08T19:56:25.886227",
+      "story_arc_id": "a_003",
+      "involved_entities": [
+        "p_014"
+      ],
+      "latent_fact_updates": [
+        "Ethan's mother calls to discuss the home maintenance progress."
+      ],
+      "importance": 2
+    },
+    {
+      "event_id": "E_202401091635",
+      "timestamp": "2024-01-09T16:35:18.912575",
+      "story_arc_id": "a_001",
+      "involved_entities": [
+        "p_004"
+      ],
+      "latent_fact_updates": [
+        "Ethan buys new workout clothes for his renewed gym membership."
+      ],
+      "importance": 3
+    },
+    {
+      "event_id": "E_202401101310",
+      "timestamp": "2024-01-10T13:10:59.861106",
+      "story_arc_id": "a_003",
+      "involved_entities": [
+        "p_014"
+      ],
+      "latent_fact_updates": [
+        "Ethan's mother reminds him to visit the childhood home again."
       ],
       "importance": 2
     }

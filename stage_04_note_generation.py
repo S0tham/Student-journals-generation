@@ -46,6 +46,31 @@ Requirements:
 - Do not make the note sound polished or fully resolved
 - Prefer a lived-in, messy memory fragment style
 
+Apply 1-3 of the following rules (pick randomly, never apply all):
+
+OMISSION — leave out one concrete detail from the event (the person's name,
+  the exact date, or the outcome). The note should feel like the writer
+  didn't bother to write everything down.
+
+ABRUPT_END — stop the note mid-thought as if the writer got distracted.
+  Do not add a conclusion or summary sentence.
+
+IMPLICIT_REFERENCE — mention something from a prior event without explaining
+  it. Use phrases like "the usual thing with Marcus" or "like last time"
+  without clarifying what that means.
+
+UNCERTAINTY — express doubt about a fact: "think it was Tuesday",
+  "not sure if I already replied", "might have been €200, can't remember".
+
+LATENT_FACT_AS_TEXTURE — do not state the latent fact directly. Let it
+  colour the tone instead. If the latent fact is "user is avoiding thinking
+  about rent", the note might just say "didn't open the bank app again".
+
+CRITICAL: latent_facts in the output JSON must represent a state transition,
+not a summary of the event text.
+Bad:  "user attended the meeting"
+Good: "user now knows the deadline moved — activates the anxiety arc"
+
 Return JSON only.
 
 Schema:
@@ -98,11 +123,27 @@ def call_ollama(prompt: str) -> str:
 
 
 def build_note_prompt(event: dict, world_state: dict) -> str:
-    """Inject a single event as context for the note generator."""
+    """Only inject entities and arcs relevant to this event."""
     event_json = json.dumps(event, indent=2, ensure_ascii=False)
-    world_state_json = json.dumps(world_state, indent=2, ensure_ascii=False)
-    
-    return f"World State (Context):\n{world_state_json}\n\nEvent:\n{event_json}\n\n{NOTE_GENERATION_PROMPT}"
+
+    relevant_entity_ids = set(event.get("involved_entities", []))
+    relevant_entities = [
+        e for e in world_state.get("entities", [])
+        if e["id"] in relevant_entity_ids
+    ]
+    arc_id = event.get("story_arc_id")
+    relevant_arcs = [
+        a for a in world_state.get("story_arcs", [])
+        if a["arc_id"] == arc_id
+    ]
+
+    slim_context = {
+        "entities": relevant_entities,
+        "story_arcs": relevant_arcs,
+    }
+    context_json = json.dumps(slim_context, indent=2, ensure_ascii=False)
+
+    return f"Context:\n{context_json}\n\nEvent:\n{event_json}\n\n{NOTE_GENERATION_PROMPT}"
 
 
 def generate_note(event: dict, world_state: dict, index: int) -> dict | None:

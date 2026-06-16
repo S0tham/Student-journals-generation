@@ -103,6 +103,13 @@ CRITICAL RULES FOR JSON VALUES:
 4. DO NOT REPEAT PATTERNS. 
 5. EVERY SINGLE EVENT from beginning to end MUST have a unique thought or update in "latent_fact_updates". If you output [] for latent_fact_updates, you have failed.
 
+Contradiction events (those with _contradiction_of set):
+- MUST introduce a different outcome, revised fact, or changed status
+  compared to the event they reference
+- Do NOT simply repeat the earlier event with different wording
+- Examples: a meeting that was confirmed is now cancelled, a task that was
+  done turns out to be incomplete, a fact the user believed is corrected
+
 {
   "events": [
     {
@@ -286,7 +293,56 @@ def print_summary(events_data: dict) -> None:
         print(f"    {count:3d}x  {a}")
     print("─────────────────────────────────────────────────────\n")
 
+def inject_contradictions(
+    skeletons: list[dict],
+    world_state: dict,
+    G,
+) -> list[dict]:
+    """
+    For every active or stalled arc, find an existing skeleton that touches
+    that arc and inject a second skeleton later in the timeline that
+    contradicts a fact from the first one.
 
+    This ensures conflict_resolution QA questions are possible.
+    """
+    from knowledge_graph import GraphValidator
+    validator = GraphValidator(G)
+    unresolved = validator.unresolved_arcs()
+
+    contradiction_skeletons = []
+
+    for arc_id in unresolved:
+        arc_skeletons = [
+            s for s in skeletons if s.get("story_arc_id") == arc_id
+        ]
+        if not arc_skeletons:
+            continue
+
+        first = arc_skeletons[0]
+
+        from datetime import datetime, timedelta
+        import random
+        base_ts = datetime.fromisoformat(first["timestamp"])
+        later_ts = base_ts + timedelta(days=random.randint(5, 14))
+
+        contradiction_skeletons.append({
+            "event_id":          f"E_contra_{arc_id}",
+            "timestamp":         later_ts.isoformat(),
+            "primary_entity":    first["primary_entity"],
+            "story_arc_id":      arc_id,
+            "involved_entities": first["involved_entities"],
+            "text":              None,
+            "latent_fact_updates": [],
+            "importance":        None,
+            "_contradiction_of": first["event_id"],
+            "_instruction":      "This event must contradict or revise a fact "
+                                 "established in the earlier event it references. "
+                                 "Same entities, different outcome or status.",
+        })
+
+    all_skeletons = skeletons + contradiction_skeletons
+    all_skeletons.sort(key=lambda s: s["timestamp"])
+    return all_skeletons
 
 def main():
     from knowledge_graph import load_graph, build_timeline_skeletons
@@ -306,6 +362,9 @@ def main():
         events_per_day=0.8,
     )
     print(f"  {len(skeletons)} skeletons generated.")
+
+    skeletons = inject_contradictions(skeletons, world_state, G)
+    print(f"  {len(skeletons)} skeletons after contradiction injection.")
 
     events_data = generate_events(world_state, skeletons)
 

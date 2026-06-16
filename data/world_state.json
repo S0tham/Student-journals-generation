@@ -1,214 +1,281 @@
 {
   "user_profile": {
     "user_id": "u_001",
-    "name": "Ethan Green",
-    "age": 34,
+    "name": "Ethan Johnson",
+    "age": 35,
     "occupation": "Software Developer",
-    "location": "Seattle, WA",
+    "location": "San Francisco, CA",
     "baseline_traits": [
-      "Casual",
-      "Mildly Ambitious"
+      "tech-savvy",
+      "creative",
+      "analytical"
     ]
   },
   "entities": [
     {
-      "id": "p_01",
-      "name": "Jane Doe",
+      "id": "p_001",
+      "name": "Sarah",
       "type": "person",
       "domains": [
         "relationships",
-        "work"
+        "social"
       ],
       "salience": "high",
-      "notes": "Ethan's girlfriend, works in finance"
+      "notes": "Long-time friend and occasional romantic partner."
     },
     {
-      "id": "p_02",
-      "name": "Work on Side Project",
-      "type": "project",
+      "id": "p_002",
+      "name": "Tom",
+      "type": "person",
       "domains": [
-        "hobbies",
-        "finances"
+        "work",
+        "family"
       ],
       "salience": "medium",
-      "notes": "Ethan has been working on this for months but struggles to find time"
+      "notes": "Brother's wife, has a child in common with Ethan."
     },
     {
-      "id": "p_03",
-      "name": "New Apartment Renovation",
+      "id": "p_003",
+      "name": "Work",
       "type": "project",
       "domains": [
-        "home",
+        "work",
         "finances"
       ],
       "salience": "high",
-      "notes": "Ethan has been planning this for a year but hasn't started"
+      "notes": "Current software development project at work."
     },
     {
-      "id": "p_04",
-      "name": "Family Vacation to Hawaii",
-      "type": "project",
-      "domains": [
-        "hobbies",
-        "travel"
-      ],
-      "salience": "medium",
-      "notes": "Ethan keeps forgetting about this, but wants to do it with his family"
-    },
-    {
-      "id": "p_05",
+      "id": "p_004",
       "name": "Gym Membership",
       "type": "object",
       "domains": [
         "health",
-        "routine"
-      ],
-      "salience": "low",
-      "notes": "Ethan signed up for this a few months ago but rarely goes"
-    },
-    {
-      "id": "p_06",
-      "name": "Tech Conference",
-      "type": "event",
-      "domains": [
-        "work",
         "hobbies"
       ],
-      "salience": "medium",
-      "notes": "Ethan is supposed to attend this in June but hasn't booked the flight"
-    },
-    {
-      "id": "p_07",
-      "name": "Mortgage Application",
-      "type": "project",
-      "domains": [
-        "finances",
-        "home"
-      ],
-      "salience": "high",
-      "notes": "Ethan has been filling out forms for weeks but hasn't submitted anything"
-    },
-    {
-      "id": "p_08",
-      "name": "Dog Walker",
-      "type": "service",
-      "domains": [
-        "routine",
-        "home"
-      ],
       "salience": "low",
-      "notes": "Ethan signed up for this, but has missed a few times"
+      "notes": "Expired membership, still listed as a goal to renew."
     },
     {
-      "id": "p_09",
-      "name": "Insurance Renewal",
-      "type": "task",
-      "domains": [
-        "finances",
-        "logistics"
-      ],
-      "salience": "medium",
-      "notes": "Ethan needs to renew this by the end of April"
-    },
-    {
-      "id": "p_10",
-      "name": "Old Apartment Landlord",
-      "type": "person",
+      "id": "p_005",
+      "name": "Home Maintenance",
+      "type": "project",
       "domains": [
         "home",
         "logistics"
       ],
       "salience": "medium",
-      "notes": "Ethan still has to deal with this after moving out"
+      "notes": "Need to fix the leaky faucet but haven't gotten around to it."
     },
     {
-      "id": "p_11",
-      "name": "New Car Lease",
-      "type": "service",
+      "id": "p_006",
+      "name": "Vacation Planning",
+      "type": "project",
       "domains": [
-        "routine",
-        "logistics"
+        "travel",
+        "hobbies"
       ],
       "salience": "medium",
-      "notes": "Ethan signed up for this but is hesitant to drive it"
+      "notes": "Purchased flights but haven't packed or researched destination."
     },
     {
-      "id": "p_12",
-      "name": "Monthly Budget Tracker",
-      "type": "object",
+      "id": "p_007",
+      "name": "Insurance Renewal",
+      "type": "project",
       "domains": [
         "finances",
-        "routine"
+        "logistics"
+      ],
+      "salience": "high",
+      "notes": "Due to renew but haven't gotten around to it."
+    },
+    {
+      "id": "p_008",
+      "name": "Tech Gadgets",
+      "type": "project",
+      "domains": [
+        "hobbies",
+        "digital life"
       ],
       "salience": "low",
-      "notes": "Ethan uses this app but rarely updates it"
+      "notes": "Bought a new smartwatch but haven't set it up."
+    },
+    {
+      "id": "p_009",
+      "name": "Book Club",
+      "type": "organization",
+      "domains": [
+        "hobbies",
+        "social"
+      ],
+      "salience": "medium",
+      "notes": "Had a few meetings but hasn't been attending regularly."
+    },
+    {
+      "id": "p_010",
+      "name": "Online Courses",
+      "type": "project",
+      "domains": [
+        "hobbies",
+        "professional development"
+      ],
+      "salience": "medium",
+      "notes": "Started a couple courses but haven't completed any."
+    },
+    {
+      "id": "p_011",
+      "name": "Garden",
+      "type": "project",
+      "domains": [
+        "hobbies",
+        "home maintenance"
+      ],
+      "salience": "low",
+      "notes": "Started planting but hasn't maintained the garden consistently."
+    },
+    {
+      "id": "p_012",
+      "name": "Health App",
+      "type": "object",
+      "domains": [
+        "health",
+        "digital life"
+      ],
+      "salience": "medium",
+      "notes": "Installed a new fitness tracking app but haven't used it much."
+    },
+    {
+      "id": "p_013",
+      "name": "Ethan's Mother",
+      "type": "person",
+      "domains": [
+        "family",
+        "health"
+      ],
+      "salience": "high",
+      "notes": "Frequent calls, discussed health issues and family obligations."
+    },
+    {
+      "id": "p_014",
+      "name": "Childhood Home",
+      "type": "place",
+      "domains": [
+        "family",
+        "logistics"
+      ],
+      "salience": "low",
+      "notes": "Occasionally visits, mostly for nostalgia and repairs."
+    },
+    {
+      "id": "p_015",
+      "name": "Home Office",
+      "type": "project",
+      "domains": [
+        "work",
+        "home maintenance"
+      ],
+      "salience": "medium",
+      "notes": "Completed a few upgrades but hasn't finished setting up."
+    },
+    {
+      "id": "p_016",
+      "name": "Credit Card Debt",
+      "type": "project",
+      "domains": [
+        "finances",
+        "stress"
+      ],
+      "salience": "high",
+      "notes": "Making minimum payments but struggling with the balance."
     }
   ],
   "story_arcs": [
     {
-      "arc_id": "s_01",
-      "title": "Family Vacation Planning",
+      "arc_id": "a_001",
+      "title": "Health and Fitness",
       "status": "stalled",
       "involved_entities": [
-        "p_04",
-        "p_03"
+        "Ethan's Mother",
+        "Sarah"
       ],
-      "summary": "Ethan keeps forgetting about the family vacation, and hasn't made much progress on the new apartment renovation"
+      "summary": "Ethan has been trying to improve his health but struggles with maintaining a routine."
     },
     {
-      "arc_id": "s_02",
-      "title": "Side Project Progress",
+      "arc_id": "a_002",
+      "title": "Work Project",
       "status": "active",
       "involved_entities": [
-        "p_02"
+        "Work",
+        "Tom"
       ],
-      "summary": "Ethan is making steady but slow progress on his side project, which has been a source of mild ambition"
+      "summary": "Ethan is working on a new software feature at work but feels the project is taking too much time."
     },
     {
-      "arc_id": "s_03",
-      "title": "Tech Conference Attendance",
-      "status": "stalled",
+      "arc_id": "a_003",
+      "title": "Family Obligations",
+      "status": "resolved",
       "involved_entities": [
-        "p_06"
+        "Ethan's Mother",
+        "Sarah"
       ],
-      "summary": "Ethan keeps forgetting to book the flight for the tech conference in June, but hopes it will happen eventually"
+      "summary": "Resolved issues with visiting the childhood home and organizing family events."
     }
   ],
   "projects": [
     {
-      "project_id": "prj_01",
-      "title": "Side Project",
-      "status": "active",
+      "project_id": "prj_001",
+      "title": "New Home Office Setup",
+      "status": "paused",
       "related_entities": [
-        "p_02"
+        "Home Office",
+        "Work"
       ],
-      "notes": "Ethan has been working on this for months but struggles to find time"
+      "notes": "Haven't had time to complete the setup despite starting a few weeks ago."
     },
     {
-      "project_id": "prj_02",
-      "title": "Family Vacation",
-      "status": "stalled",
+      "project_id": "prj_002",
+      "title": "Online Course Completion",
+      "status": "abandoned",
       "related_entities": [
-        "p_04"
+        "Online Courses",
+        "Professional Development"
       ],
-      "notes": "Ethan keeps forgetting about this, but wants to do it with his family"
+      "notes": "Started courses but haven't found the time or motivation to finish them."
+    },
+    {
+      "project_id": "prj_003",
+      "title": "Home Maintenance",
+      "status": "active",
+      "related_entities": [
+        "Garden",
+        "Home Office"
+      ],
+      "notes": "Needs to complete a few more tasks but hasn't made much progress recently."
     }
   ],
   "latent_facts": [
     {
-      "fact_id": "lf_01",
-      "subject": "p_06",
-      "relation": "will_attend",
-      "object": "Tech Conference",
-      "arc_id": "s_03",
+      "fact_id": "lf_001",
+      "subject": "Sarah",
+      "relation": "romantic partner",
+      "object": "Ethan",
+      "arc_id": "a_001",
       "confidence": "assumed"
     },
     {
-      "fact_id": "lf_02",
-      "subject": "p_04",
-      "relation": "will_happen",
-      "object": "Family Vacation to Hawaii",
-      "arc_id": "s_01",
+      "fact_id": "lf_002",
+      "subject": "Work",
+      "relation": "project leader",
+      "object": "Tom",
+      "arc_id": "a_002",
+      "confidence": "confirmed"
+    },
+    {
+      "fact_id": "lf_003",
+      "subject": "Ethan's Mother",
+      "relation": "health advisor",
+      "object": "Ethan",
+      "arc_id": "a_001",
       "confidence": "assumed"
     }
   ]
