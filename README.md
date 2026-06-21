@@ -8,6 +8,10 @@ Supports two backends: the **Anthropic API** (paid, highest quality) and **Ollam
 ## Architecture
 
 ```
+config.py                  →  central configuration (model, backend, paths, parameters)
+prompts.py                 →  all LLM prompts, imported by stages 01, 02, 04, 05
+llm.py                     →  shared call_llm() client (Ollama / Anthropic), used by all stages
+         ↓
 stage_01_world_state.py    →  data/world_state.json
          ↓
 knowledge_graph.py         →  (in-memory graph, imported by stages 02 and 03)
@@ -21,7 +25,13 @@ stage_04_note_generation.py → data/notes.json
 stage_05_qa_generation.py  →  data/qa_pairs.json
 ```
 
-`knowledge_graph.py` is not a stage — it is a shared module imported by stages 02 and 03.
+`config.py`, `prompts.py`, and `llm.py` are not stages — they are shared modules imported
+by every stage file. `config.py` is the single place to change the model, backend,
+pipeline duration, or file paths. `prompts.py` holds every LLM prompt used in the
+pipeline. `llm.py` exposes one `call_llm()` function with built-in retry logic, used
+instead of duplicating an Ollama/Anthropic client in each stage.
+
+`knowledge_graph.py` is also not a stage — it is a shared module imported by stages 02 and 03.
 It does two things: builds a directed graph of the world state for deterministic validation,
 and runs a biased random walk to generate event skeletons before the LLM writes any text.
 
@@ -34,17 +44,21 @@ and runs a biased random walk to generate event skeletons before the LLM writes 
 Requires a paid API account at [console.anthropic.com](https://console.anthropic.com).
 
 ```bash
-pip install anthropic networkx
+pip install anthropic networkx requests
 export ANTHROPIC_API_KEY=sk-...
 ```
+
+Set `BACKEND = "anthropic"` in `config.py`.
 
 ### Option B — Ollama (local, free)
 
 ```bash
 pip install requests networkx
 ollama serve          # start Ollama
-ollama pull qwen2.5   # or whichever model you configure
+ollama pull qwen2.5   # or whichever model you set in config.py
 ```
+
+`BACKEND = "ollama"` is the default in `config.py` — no changes needed beyond pulling a model.
 
 #### Recommended Ollama models
 
@@ -62,17 +76,29 @@ Use at least a 32B model for production runs. The default `qwen2.5` (no size suf
 
 ## Configuration
 
-Each stage file currently has its model and paths set at the top of the file:
+All tunable parameters live in `config.py` — this is the only file you need to edit for routine changes:
 
 ```python
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL      = "qwen2.5"
-INPUT_FILE = Path("data") / "world_state.json"
+# config.py
+
+BACKEND         = "ollama"          # "ollama" | "anthropic"
+OLLAMA_MODEL    = "qwen2.5"         # e.g. "qwen2.5:32b" for production runs
+ANTHROPIC_MODEL = "claude-opus-4-6"
+
+DURATION_DAYS   = 10                 # length of the simulated event timeline
+EVENTS_PER_DAY  = 0.8
+MIN_ENTITIES    = 10
+
+PATHS = {
+    "world_state":     Path("data") / "world_state.json",
+    ...
+}
 ```
 
-To change the model, update `MODEL` in each stage file. All output files are written to `data/`.
-
-> A central `config.py` is planned for a future refactor so all parameters can be set in one place.
+`prompts.py` holds every prompt sent to the LLM. Edit a prompt there without touching
+any stage file. `llm.py` provides the shared `call_llm(prompt, stage=...)` function
+that every stage calls — it reads the backend, model, and temperature from `config.py`
+automatically and retries up to `MAX_RETRIES` times on JSON parse failure.
 
 ---
 
@@ -135,6 +161,9 @@ All `supporting_notes` reference real note IDs, unanswerable questions have no s
 
 ```
 project/
+├── config.py                    # Single source of truth: model, backend, paths, parameters
+├── prompts.py                   # All LLM prompts used across the pipeline
+├── llm.py                       # Shared call_llm() client with retry logic
 ├── stage_01_world_state.py      # Generates hidden ground truth
 ├── stage_02_event_timeline.py   # Generates event stream via skeleton + LLM
 ├── stage_03_repair.py           # Graph-based structural repair
@@ -152,6 +181,15 @@ project/
 ---
 
 ## Design decisions
+
+**Centralised configuration.**
+`config.py` is the single source of truth for the model, backend, pipeline duration, entity bounds, and file paths. No stage file hardcodes a model name, URL, or path — they all import from `config.py`. This replaces an earlier version where each stage file duplicated `OLLAMA_URL`, `MODEL`, and `Path("data") / ...` independently.
+
+**Shared LLM client.**
+`llm.py` exposes one `call_llm(prompt, stage)` function used by every stage that needs the LLM. It reads the backend and temperature from `config.py`, retries up to `MAX_RETRIES` times on JSON parse failure, and supports both Ollama and the Anthropic API behind the same interface. This replaces five near-identical `call_ollama()` functions that previously existed, one per stage file.
+
+**Prompts isolated from logic.**
+`prompts.py` holds every prompt as a plain string constant. Editing a prompt — to tune note style, QA difficulty, or world state realism — never requires touching pipeline logic.
 
 **Knowledge graph as structural backbone.**
 `knowledge_graph.py` converts `world_state.json` into a `networkx` directed graph. Entities, story arcs, projects, and latent facts become nodes and edges. This lets stages 02 and 03 perform structural checks in code rather than asking an LLM to guess at valid IDs.

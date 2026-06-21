@@ -56,6 +56,8 @@ These layers must not bleed into each other. Later stages only see what they are
 ## Pipeline
 
 ```
+config.py / prompts.py / llm.py   →  shared modules (model, paths, prompts, retries)
+             ↓
 Stage 01: World State       →  data/world_state.json
              ↓ knowledge_graph.py
 Stage 02: Event Timeline    →  data/events_raw.json
@@ -66,6 +68,9 @@ Stage 05: QA Generation     →  data/qa_pairs.json
 ```
 
 ### Key architectural decisions
+
+**Centralised configuration and prompts.**
+`config.py` is the single source of truth for the model, backend, pipeline duration, and file paths — no stage file hardcodes these. `prompts.py` holds every LLM prompt as a plain string constant, separating prompt tuning from pipeline logic. `llm.py` exposes one shared `call_llm()` function with built-in retry logic, used by every stage instead of duplicating an Ollama/Anthropic client five times.
 
 **Knowledge graph as structural backbone.**
 `knowledge_graph.py` converts the world state into a queryable `networkx` directed graph. It serves two roles: (1) a deterministic validator that replaces LLM-based repair, and (2) a biased random walk sampler that pre-fills event skeletons before the LLM writes any text.
