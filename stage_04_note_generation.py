@@ -1,93 +1,35 @@
 """
-STAGE 04 — Note Generation
+Stage 04 — Note Generation
 ============================
 Reads the repaired events from stage 03 and converts each event into
 a realistic, human-like personal note. The LLM only handles surface
 realization — the structure comes from the event, not the model.
 
+Only the entities and arc relevant to each event are sent as context
+(not the full world state), to keep prompts small and on-topic.
+
 Input:  data/events_repaired.json
+        data/world_state.json
 Output: data/notes.json
 
 Pipeline position:
-  stage_03_repair -> [stage_04_note_generation] -> stage_05_qa_generation -> ...
+  stage_03 → [stage_04] → stage_05
 
-To run:
+Usage:
   python stage_04_note_generation.py
-
-Requirements:
-  Ollama running locally with your chosen model pulled.
-  Start Ollama: ollama serve
-  Run stages 01, 02, and 03 first.
 """
 
 import json
-import re
-import requests
-from pathlib import Path
+
+import config
+from llm import call_llm, parse_json_response
+from prompts import STAGE_04_NOTE_GENERATION
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "llama3.1"
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
-INPUT_FILE  = Path("data") / "events_repaired.json"
-OUTPUT_FILE = Path("data") / "notes.json"
-WORLD_STATE_FILE = Path("data") / "world_state.json"
-
-
-NOTE_GENERATION_PROMPT = """Convert the structured event into a realistic personal note.
-
-Requirements:
-- Natural language
-- Imperfect human writing style
-- Concise
-- Sometimes partial/incomplete
-- Sometimes references prior context implicitly
-- Maintain consistency with entities and timeline
-- Do not make the note sound polished or fully resolved
-- Prefer a lived-in, messy memory fragment style
-
-Apply 1-3 of the following rules (pick randomly, never apply all):
-
-OMISSION — leave out one concrete detail from the event (the person's name,
-  the exact date, or the outcome). The note should feel like the writer
-  didn't bother to write everything down.
-
-ABRUPT_END — stop the note mid-thought as if the writer got distracted.
-  Do not add a conclusion or summary sentence.
-
-IMPLICIT_REFERENCE — mention something from a prior event without explaining
-  it. Use phrases like "the usual thing with Marcus" or "like last time"
-  without clarifying what that means.
-
-UNCERTAINTY — express doubt about a fact: "think it was Tuesday",
-  "not sure if I already replied", "might have been €200, can't remember".
-
-LATENT_FACT_AS_TEXTURE — do not state the latent fact directly. Let it
-  colour the tone instead. If the latent fact is "user is avoiding thinking
-  about rent", the note might just say "didn't open the bank app again".
-
-CRITICAL: latent_facts in the output JSON must represent a state transition,
-not a summary of the event text.
-Bad:  "user attended the meeting"
-Good: "user now knows the deadline moved — activates the anxiety arc"
-
-Return JSON only.
-
-Schema:
-{
-  "note_id": "",
-  "timestamp": "",
-  "note_type": "",
-  "text": "",
-  "entities": [],
-  "tags": [],
-  "latent_facts": [],
-  "story_arc_id": "",
-  "importance": ""
-}"""
-
-
-def load_json(path: Path, label: str) -> dict:
+def load_json(label: str, key: str) -> dict:
+    path = config.PATHS[key]
     if not path.exists():
         raise FileNotFoundError(
             f"{label} not found at '{path}'. Run the previous stage first."
@@ -96,83 +38,12 @@ def load_json(path: Path, label: str) -> dict:
         return json.load(f)
 
 
-def call_ollama(prompt: str) -> str:
-    """Send a prompt to the local Ollama instance and return the response text."""
-    payload = {
-        "model": MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "format": "json",
-        "options": {
-            "num_ctx": 8192,
-            "temperature": 0.8,  
-            "num_predict": -1,
-        }
-    }
-    try:
-        response = requests.post(OLLAMA_URL, json=payload, timeout=120)
-        response.raise_for_status()
-        return response.json().get("response", "").strip()
-    except requests.exceptions.ConnectionError:
-        raise ConnectionError(
-            f"Could not connect to Ollama at {OLLAMA_URL}. "
-            "Is Ollama running? Start it with: ollama serve"
-        )
-    except requests.exceptions.Timeout:
-        raise TimeoutError("Ollama took too long to respond (>120s).")
-
-
-def build_note_prompt(event: dict, world_state: dict) -> str:
-    """Only inject entities and arcs relevant to this event."""
-    event_json = json.dumps(event, indent=2, ensure_ascii=False)
-
-    relevant_entity_ids = set(event.get("involved_entities", []))
-    relevant_entities = [
-        e for e in world_state.get("entities", [])
-        if e["id"] in relevant_entity_ids
-    ]
-    arc_id = event.get("story_arc_id")
-    relevant_arcs = [
-        a for a in world_state.get("story_arcs", [])
-        if a["arc_id"] == arc_id
-    ]
-
-    slim_context = {
-        "entities": relevant_entities,
-        "story_arcs": relevant_arcs,
-    }
-    context_json = json.dumps(slim_context, indent=2, ensure_ascii=False)
-
-    return f"Context:\n{context_json}\n\nEvent:\n{event_json}\n\n{NOTE_GENERATION_PROMPT}"
-
-
-def generate_note(event: dict, world_state: dict, index: int) -> dict | None:
-    """
-    Generate one note from one event.
-    Returns the parsed note dict, or None if generation/parsing fails.
-    """
-    prompt   = build_note_prompt(event, world_state)
-    raw_text = call_ollama(prompt)
-
-    raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
-    raw_text = re.sub(r"\s*```$", "", raw_text)
-
-    note = json.loads(raw_text)
-
-    if not note.get("note_id"):
-        note["note_id"] = f"n_{index:04d}"
-
-    if not note.get("timestamp"):
-        note["timestamp"] = event.get("timestamp", "")
-    if not note.get("story_arc_id"):
-        note["story_arc_id"] = event.get("story_arc_id", "")
-    if not note.get("importance"):
-        imp = event.get("importance", 3)
-        note["importance"] = _importance_label(imp)
-
-    note["source_event_id"] = event.get("event_id", "")
-
-    return note
+def save_notes(notes: list[dict]) -> None:
+    path = config.PATHS["notes"]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"notes": notes}, f, indent=2, ensure_ascii=False)
+    print(f"Saved → {path}")
 
 
 def _importance_label(value) -> str:
@@ -188,15 +59,60 @@ def _importance_label(value) -> str:
     return "high"
 
 
+# ── Prompt construction ───────────────────────────────────────────────────────
+
+def build_note_prompt(event: dict, world_state: dict) -> str:
+    """Inject only the entities and arc relevant to this event, not the full world state."""
+    event_json = json.dumps(event, indent=2, ensure_ascii=False)
+
+    relevant_entity_ids = set(event.get("involved_entities", []))
+    relevant_entities = [
+        e for e in world_state.get("entities", [])
+        if e["id"] in relevant_entity_ids
+    ]
+
+    arc_id = event.get("story_arc_id")
+    relevant_arcs = [
+        a for a in world_state.get("story_arcs", [])
+        if a["arc_id"] == arc_id
+    ]
+
+    slim_context = {"entities": relevant_entities, "story_arcs": relevant_arcs}
+    context_json = json.dumps(slim_context, indent=2, ensure_ascii=False)
+
+    return f"Context:\n{context_json}\n\nEvent:\n{event_json}\n\n{STAGE_04_NOTE_GENERATION}"
+
+
+# ── Generation ────────────────────────────────────────────────────────────────
+
+def generate_note(event: dict, world_state: dict, index: int) -> dict:
+    """Generate one note from one event. Raises on parse failure (caller catches)."""
+    prompt = build_note_prompt(event, world_state)
+    raw    = call_llm(prompt, stage="stage_04")
+    note   = parse_json_response(raw)
+
+    if not note.get("note_id"):
+        note["note_id"] = f"n_{index:04d}"
+    if not note.get("timestamp"):
+        note["timestamp"] = event.get("timestamp", "")
+    if not note.get("story_arc_id"):
+        note["story_arc_id"] = event.get("story_arc_id", "")
+    if not note.get("importance"):
+        note["importance"] = _importance_label(event.get("importance", 3))
+
+    note["source_event_id"] = event.get("event_id", "")
+    return note
+
+
+# ── Validation ────────────────────────────────────────────────────────────────
+
 def validate_notes(notes: list[dict]) -> list[str]:
-    """
-    Basic structural validation.
-    Returns a list of warning strings (empty = all good).
-    """
-    warnings  = []
-    seen_ids  = set()
-    required  = {"note_id", "timestamp", "note_type", "text", "entities",
-                 "tags", "latent_facts", "story_arc_id", "importance"}
+    warnings = []
+    seen_ids = set()
+    required = {
+        "note_id", "timestamp", "note_type", "text", "entities",
+        "tags", "latent_facts", "story_arc_id", "importance",
+    }
 
     for note in notes:
         nid = note.get("note_id", "?")
@@ -219,12 +135,7 @@ def validate_notes(notes: list[dict]) -> list[str]:
     return warnings
 
 
-def save_notes(notes: list[dict], path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump({"notes": notes}, f, indent=2, ensure_ascii=False)
-    print(f"Saved → {path}")
-
+# ── Summary ───────────────────────────────────────────────────────────────────
 
 def print_summary(notes: list[dict], failed: int) -> None:
     if not notes:
@@ -249,21 +160,21 @@ def print_summary(notes: list[dict], failed: int) -> None:
     for i in ("high", "medium", "low", "unknown"):
         if i in imp_counts:
             print(f"    {imp_counts[i]:3d}x  {i}")
-    print(f"\n  Sample note:")
     sample = next((n for n in notes if n.get("text")), None)
     if sample:
+        print(f"\n  Sample note:")
         print(f"    [{sample.get('note_id')}] {sample.get('timestamp', '')[:10]}")
         print(f"    \"{sample.get('text', '')[:120]}...\"")
     print("─────────────────────────────────────────────────────\n")
 
 
-def main():
-    events_data = load_json(INPUT_FILE, "Repaired events")
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main() -> None:
+    events_data = load_json("Repaired events", "events_repaired")
     events      = events_data.get("events", [])
-    
-    # Voeg deze regel toe om de context in te laden
-    world_state_data = load_json(WORLD_STATE_FILE, "World state")
-    
+    world_state = load_json("World state", "world_state")
+
     print(f"Loaded {len(events)} repaired events. Generating notes...")
 
     notes  = []
@@ -274,15 +185,11 @@ def main():
         print(f"  [{i+1:3d}/{len(events)}] {eid}...", end=" ", flush=True)
 
         try:
-            note = generate_note(event, world_state_data, i)
-            if note:
-                notes.append(note)
-                print("✓")
-            else:
-                print("✗ (empty result)")
-                failed += 1
-        except (json.JSONDecodeError, Exception) as e:
-            print(f"✗ ({type(e).__name__}: {e})")
+            note = generate_note(event, world_state, i)
+            notes.append(note)
+            print("✓")
+        except Exception as exc:
+            print(f"✗ ({type(exc).__name__}: {exc})")
             failed += 1
 
     warnings = validate_notes(notes)
@@ -293,9 +200,9 @@ def main():
     else:
         print("✓  Validation passed")
 
-    save_notes(notes, OUTPUT_FILE)
+    save_notes(notes)
     print_summary(notes, failed)
-    print("Stage 04 complete. Next: run stage_05_qa_generation.py")
+    print("Stage 04 complete. Next: python stage_05_qa_generation.py")
 
 
 if __name__ == "__main__":

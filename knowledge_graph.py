@@ -4,20 +4,17 @@ knowledge_graph.py — World State → Knowledge Graph
 Converts the world_state.json produced by stage_01 into a queryable
 directed graph using networkx.
 
-This module slots into your existing pipeline in two ways:
+This module is imported by two pipeline stages:
 
-  1. As a validator replacement for stage_03_repair.py
-     → deterministic graph-based checks instead of LLM repair
+  1. stage_03_repair.py     — GraphValidator replaces the LLM repair pass
+                               with deterministic structural checks.
+  2. stage_02_event_timeline.py — build_timeline_skeletons() runs a biased
+                               random walk that decides WHAT the next event
+                               is about, so the LLM only has to write the text.
 
-  2. As a trajectory sampler for stage_02_event_timeline.py
-     → biased random walk that decides WHAT the next event is about,
-       so the LLM only has to write the text
-
-Usage (standalone):
-  python knowledge_graph.py
-
-Usage (from another stage):
-  from knowledge_graph import load_graph, GraphValidator, sample_next_event
+It is not a pipeline stage itself and has no "output" file. Running it
+directly (`python knowledge_graph.py`) inspects an existing world_state.json
+and prints a graph summary — useful for debugging.
 
 Requirements:
   pip install networkx
@@ -26,9 +23,10 @@ Requirements:
 import json
 import random
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import networkx as nx
+
+import config
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -429,11 +427,11 @@ def print_graph_summary(G: nx.DiGraph) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 5. MAIN — demo run against data/world_state.json
+# 5. MAIN — inspect the graph built from data/world_state.json
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    world_state_path = Path("data") / "world_state.json"
+    world_state_path = config.PATHS["world_state"]
 
     if not world_state_path.exists():
         print(f"No world state found at {world_state_path}.")
@@ -444,20 +442,19 @@ def main():
     with open(world_state_path, encoding="utf-8") as f:
         world_state = json.load(f)
 
-    # Build graph
     G = load_graph(world_state)
     print_graph_summary(G)
 
-    # Show validator in action (if events_repaired.json exists)
-    repaired_path = Path("data") / "events_repaired.json"
+    # Show validator in action if a repaired event stream already exists
+    repaired_path = config.PATHS["events_repaired"]
     if repaired_path.exists():
         print("Validating events_repaired.json against the graph...")
         with open(repaired_path, encoding="utf-8") as f:
             events_data = json.load(f)
         events = events_data.get("events", [])
 
-        validator   = GraphValidator(G)
-        violations  = validator.validate_timeline(events)
+        validator  = GraphValidator(G)
+        violations = validator.validate_timeline(events)
 
         if violations:
             print(f"\n⚠️  {len(violations)} violation(s) found:")
@@ -470,19 +467,22 @@ def main():
     else:
         print("(Skipping event validation — events_repaired.json not found)")
 
-    # Demo: generate timeline skeletons
+    # Demo: generate a handful of sample skeletons via the biased random walk
     print("\nGenerating 5 sample event skeletons via biased random walk...")
+    start_date = datetime.fromisoformat(config.START_DATE).replace(hour=9)
     skeletons = build_timeline_skeletons(
         G,
-        start_date=datetime(2024, 1, 1, 9, 0),
+        start_date=start_date,
         duration_days=5,
         events_per_day=1.0,
     )
     for s in skeletons:
         entity_name = G.nodes[s["primary_entity"]].get("name", s["primary_entity"])
-        arc_title   = G.nodes[s["story_arc_id"]].get("title", s["story_arc_id"]) \
-                      if s["story_arc_id"] and s["story_arc_id"] in G.nodes else "—"
-        neighbours  = [G.nodes[n].get("name", n) for n in s["involved_entities"][1:]]
+        arc_title = (
+            G.nodes[s["story_arc_id"]].get("title", s["story_arc_id"])
+            if s["story_arc_id"] and s["story_arc_id"] in G.nodes else "—"
+        )
+        neighbours = [G.nodes[n].get("name", n) for n in s["involved_entities"][1:]]
         print(f"  {s['timestamp'][:16]}  entity={entity_name:20s}  arc={arc_title}")
         if neighbours:
             print(f"  {'':16s}  also involves: {', '.join(neighbours)}")

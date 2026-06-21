@@ -1,205 +1,137 @@
 """
-STAGE 02 — Event Timeline Generator
+Stage 02 — Event Timeline Generator
 =====================================
-Reads the world state from stage 01 and generates a 90-day chronological
+Reads the world state from stage 01 and generates a chronological
 timeline of events that advance the story arcs and update latent facts.
+
+Event skeletons (entity, arc, timestamp) are pre-filled by the knowledge
+graph via a biased random walk. The LLM only writes the text and
+latent_fact_updates fields. Contradiction skeletons are injected for
+every unresolved arc to ensure conflict_resolution QA pairs are possible.
 
 Input:  data/world_state.json
 Output: data/events_raw.json
 
 Pipeline position:
-  stage_01_world_state -> [stage_02_event_timeline] -> stage_03_repair -> ...
+  stage_01 → [stage_02] → stage_03 → stage_04 → stage_05
 
-To run:
+Usage:
   python stage_02_event_timeline.py
-
-Requirements:
-  Ollama running locally with your chosen model pulled.
-  Start Ollama: ollama serve
-  Run stage 01 first to generate data/world_state.json
 """
 
 import json
-import re
-import requests
-from pathlib import Path
+import random
+from datetime import datetime, timedelta
+
+import config
+from llm import call_llm, parse_json_response
+from prompts import STAGE_02_EVENT_TIMELINE
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen2.5"
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
-INPUT_FILE  = Path("data") / "world_state.json"
-OUTPUT_FILE = Path("data") / "events_raw.json"
-
-
-EVENT_TIMELINE_PROMPT = """Using the provided world state, generate a 10-day timeline of events.
-
-You are simulating a noisy, partially incomplete human memory system, not a narrative story.
-
-Core Requirements
-
-Generate events that:
-- Evolve existing story arcs explicitly over time
-- Include recurring routines and meetings with realistic irregularity
-- Include cancellations, reschedules, and partial completions
-- Include temporal dependencies (later events must depend on earlier ones)
-- Include resurfacing forgotten tasks or obligations after delays
-- Occasionally introduce conflicting or corrected information
-- Reference earlier events when relevant (explicit temporal linkage encouraged)
-
-Realism Constraints
-- Not all arcs progress evenly or continuously
-- Some arcs stall, decay, or silently disappear
-- Some tasks remain perpetually unfinished
-- Some reminders resurface multiple times with no resolution
-- Behavior must reflect inconsistency between intent and action
-- Emotional tone and priorities may drift over time
-- Avoid uniform importance distribution (some events should be trivial, some disruptive)
-
-Entity & Arc Constraints
-- Only use entities defined in the world state
-- Every event must belong to a valid story_arc_id from the input
-- Entities may recur across unrelated arcs
-- Entity relationships should subtly influence cross-domain events
-
-Latent Fact Rules (CRITICAL)
-latent_fact_updates must follow these rules:
-- Must represent a change, reinforcement, contradiction, or activation
-- Must be event-specific, not a repeated static fact
-- Must NOT repeat latent facts verbatim unless explicitly recontextualized
-- May:
-  - confirm a latent pattern
-  - contradict a latent assumption
-  - update state
-  - trigger relevance
-
-Event Diversity Requirements
-Across the full timeline, include:
-- routine events
-- work meetings
-- missed obligations
-- rescheduled appointments
-- financial/admin resurfacing
-- health-related follow-ups
-- social interactions (in-person and digital)
-- maintenance/home issues
-- travel or planning delays
-
-Ensure uneven distribution (no repetitive structure).
-
-Temporal Requirements
-- Use explicit ISO timestamps (YYYY-MM-DDTHH:MM:SS)
-- Events must be strictly chronological
-- Some events must explicitly depend on earlier ones
-- Some planned events must be implicitly cancelled without explicit cancellation event
-
-Output Format (STRICT)
-Return ONLY valid JSON. 
-
-CRITICAL RULES FOR JSON VALUES:
-1. "story_arc_id" MUST NOT be null for more than 30% of events. You MUST actively use the arcs provided.
-2. "latent_fact_updates" MUST NOT be empty []. At least 50% of your events MUST contain a string here describing how a latent fact changed, strengthened, or was contradicted.
-3. "involved_entities" MUST rotate. Do not use the same entity for every event.
-4. DO NOT REPEAT PATTERNS. 
-5. EVERY SINGLE EVENT from beginning to end MUST have a unique thought or update in "latent_fact_updates". If you output [] for latent_fact_updates, you have failed.
-
-Contradiction events (those with _contradiction_of set):
-- MUST introduce a different outcome, revised fact, or changed status
-  compared to the event they reference
-- Do NOT simply repeat the earlier event with different wording
-- Examples: a meeting that was confirmed is now cancelled, a task that was
-  done turns out to be incomplete, a fact the user believed is corrected
-
-{
-  "events": [
-    {
-      "event_id": "E1",
-      "timestamp": "YYYY-MM-DDTHH:MM:SS",
-      "event_type": "...",
-      "involved_entities": ["..."],
-      "story_arc_id": "a_001",
-      "latent_fact_updates": ["Alex realizes he cannot afford the renovation right now."],
-      "importance": 1-5
-    }
-  ]
-}
-
-Hard Constraints
-- No extra keys
-- No commentary
-- No markdown
-- No explanations
-- No schema drift
-- No invented entities or arcs"""
-
-
-
-def load_world_state(path: Path) -> dict:
-    """Load the world state generated by stage 01."""
+def load_world_state() -> dict:
+    path = config.PATHS["world_state"]
     if not path.exists():
         raise FileNotFoundError(
-            f"World state not found at '{path}'. "
-            "Run stage_01_world_state.py first."
+            f"World state not found at '{path}'. Run stage_01_world_state.py first."
         )
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def call_ollama(prompt: str) -> str:
-    """Send a prompt to the local Ollama instance and return the response text."""
-    payload = {
-        "model": MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "format": "json",
-        "options": {
-            "num_ctx": 8192,
-            "temperature": 0.7,
-            "num_predict": -1,
-        }
-    }
-    try:
-        response = requests.post(OLLAMA_URL, json=payload, timeout=500)
-        response.raise_for_status()
-        return response.json().get("response", "").strip()
-    except requests.exceptions.ConnectionError:
-        raise ConnectionError(
-            f"Could not connect to Ollama at {OLLAMA_URL}. "
-            "Is Ollama running? Start it with: ollama serve"
-        )
-    except requests.exceptions.Timeout:
-        raise TimeoutError("Ollama took too long to respond (>500s). Try a smaller model.")
+def save_events(events_data: dict) -> None:
+    path = config.PATHS["events_raw"]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(events_data, f, indent=2, ensure_ascii=False)
+    print(f"Saved → {path}")
 
 
-def build_prompt(world_state: dict, skeletons: list) -> str:
-    """Inject the world state and pre-built skeletons into the prompt."""
+# ── Skeleton generation ───────────────────────────────────────────────────────
+
+def build_skeletons(world_state: dict) -> list[dict]:
+    """
+    Build event skeletons via a biased random walk over the knowledge graph,
+    then inject contradiction skeletons for each unresolved arc.
+    """
+    from knowledge_graph import load_graph, build_timeline_skeletons, GraphValidator
+
+    G = load_graph(world_state)
+
+    start_date = datetime.fromisoformat(config.START_DATE).replace(hour=9)
+    skeletons = build_timeline_skeletons(
+        G,
+        start_date=start_date,
+        duration_days=config.DURATION_DAYS,
+        events_per_day=config.EVENTS_PER_DAY,
+    )
+    print(f"  {len(skeletons)} skeletons generated via biased random walk.")
+
+    skeletons = _inject_contradictions(skeletons, G, GraphValidator(G))
+    print(f"  {len(skeletons)} skeletons after contradiction injection.")
+
+    return skeletons
+
+
+def _inject_contradictions(skeletons: list[dict], G, validator) -> list[dict]:
+    """
+    For every active or stalled arc, inject a contradiction skeleton later
+    in the timeline. The LLM is instructed to revise or contradict a fact
+    from the first event in that arc.
+    """
+    contradiction_skeletons = []
+
+    for arc_id in validator.unresolved_arcs():
+        arc_skeletons = [s for s in skeletons if s.get("story_arc_id") == arc_id]
+        if not arc_skeletons:
+            continue
+
+        first = arc_skeletons[0]
+        base_ts = datetime.fromisoformat(first["timestamp"])
+        later_ts = base_ts + timedelta(days=random.randint(5, 14))
+
+        contradiction_skeletons.append({
+            "event_id":            f"E_contra_{arc_id}",
+            "timestamp":           later_ts.isoformat(),
+            "primary_entity":      first["primary_entity"],
+            "story_arc_id":        arc_id,
+            "involved_entities":   first["involved_entities"],
+            "text":                None,
+            "latent_fact_updates": [],
+            "importance":          None,
+            "_contradiction_of":   first["event_id"],
+            "_instruction": (
+                "This event must contradict or revise a fact established in the "
+                "earlier event it references. Same entities, different outcome or status."
+            ),
+        })
+
+    all_skeletons = skeletons + contradiction_skeletons
+    all_skeletons.sort(key=lambda s: s["timestamp"])
+    return all_skeletons
+
+
+# ── Generation ────────────────────────────────────────────────────────────────
+
+def generate_events(world_state: dict, skeletons: list[dict]) -> dict:
+    """Send world state and skeletons to the LLM; return parsed events dict."""
+    print(f"Generating event text via {config.BACKEND} ({config.OLLAMA_MODEL})...")
     world_state_json = json.dumps(world_state, indent=2, ensure_ascii=False)
     skeletons_json   = json.dumps(skeletons, indent=2, ensure_ascii=False)
-    return (
+
+    prompt = (
         f"World state:\n{world_state_json}\n\n"
-        f"Event skeletons (structure is fixed — only write the 'text' and 'latent_fact_updates' and 'importance' fields):\n"
-        f"{skeletons_json}\n\n"
-        f"{EVENT_TIMELINE_PROMPT}"
+        f"Event skeletons:\n{skeletons_json}\n\n"
+        f"{STAGE_02_EVENT_TIMELINE}"
     )
+    raw = call_llm(prompt, stage="stage_02")
+    return parse_json_response(raw)
 
 
-def generate_events(world_state: dict, skeletons: list) -> dict:
-    """Call Ollama with the world state + skeletons and return the parsed events dict."""
-    print(f"Generating event text via Ollama ({MODEL})...")
-    prompt = build_prompt(world_state, skeletons)
-    raw_text = call_ollama(prompt)
-
-    raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text)
-    raw_text = re.sub(r"\s*```$", "", raw_text)
-
-    return json.loads(raw_text)
-
+# ── Validation ────────────────────────────────────────────────────────────────
 
 def validate_events(events_data: dict, world_state: dict) -> list[str]:
-    """
-    Check the generated events against the world state.
-    Returns a list of warning strings.
-    """
     warnings = []
     events = events_data.get("events", [])
 
@@ -208,71 +140,63 @@ def validate_events(events_data: dict, world_state: dict) -> list[str]:
         return warnings
 
     if len(events) < 10:
-        warnings.append(f"Only {len(events)} events — expected ~15-25 for a 10-day timeline")
+        warnings.append(f"Only {len(events)} events — expected ≥10")
 
     valid_entity_ids = {e.get("id") for e in world_state.get("entities", [])}
     valid_arc_ids    = {a.get("arc_id") for a in world_state.get("story_arcs", [])}
-
-    required_event_keys = {"event_id", "timestamp", "event_type", "involved_entities",
-                           "story_arc_id", "latent_fact_updates", "importance"}
-
-    seen_ids = set()
-    prev_timestamp = ""
+    required_keys    = {
+        "event_id", "timestamp", "event_type", "involved_entities",
+        "story_arc_id", "latent_fact_updates", "importance",
+    }
+    seen_ids   = set()
+    prev_ts    = ""
 
     for i, event in enumerate(events):
         eid = event.get("event_id", f"[index {i}]")
 
-        # Duplicate IDs
         if eid in seen_ids:
             warnings.append(f"Duplicate event_id: '{eid}'")
         seen_ids.add(eid)
 
-        # Missing keys
-        missing = required_event_keys - event.keys()
+        missing = required_keys - event.keys()
         if missing:
             warnings.append(f"Event '{eid}' missing keys: {missing}")
 
-        # Chronological order
         ts = event.get("timestamp", "")
-        if ts and prev_timestamp and ts < prev_timestamp:
-            warnings.append(f"Event '{eid}' timestamp out of order: {ts} after {prev_timestamp}")
+        if ts and prev_ts and ts < prev_ts:
+            warnings.append(f"Event '{eid}' timestamp out of order: {ts} after {prev_ts}")
         if ts:
-            prev_timestamp = ts
+            prev_ts = ts
 
-        # Unknown entities
         for entity in event.get("involved_entities", []):
             if entity not in valid_entity_ids:
                 warnings.append(f"Event '{eid}' references unknown entity: '{entity}'")
 
-        # Unknown arc
         arc = event.get("story_arc_id")
         if arc and arc not in valid_arc_ids:
             warnings.append(f"Event '{eid}' references unknown arc: '{arc}'")
 
-        # Importance range
         importance = event.get("importance")
-        if importance is not None and not (1 <= int(importance) <= 5):
-            warnings.append(f"Event '{eid}' importance out of range: {importance}")
+        if importance is not None:
+            try:
+                if not (1 <= int(importance) <= 5):
+                    warnings.append(f"Event '{eid}' importance out of range: {importance}")
+            except (ValueError, TypeError):
+                warnings.append(f"Event '{eid}' importance is not a number: '{importance}'")
 
     return warnings
 
 
-def save_events(events_data: dict, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(events_data, f, indent=2, ensure_ascii=False)
-    print(f"Saved → {path}")
-
+# ── Summary ───────────────────────────────────────────────────────────────────
 
 def print_summary(events_data: dict) -> None:
-    """Print a human-readable summary of the generated timeline."""
     events = events_data.get("events", [])
     if not events:
         print("No events to summarise.")
         return
 
     type_counts: dict[str, int] = {}
-    arc_counts: dict[str, int] = {}
+    arc_counts:  dict[str, int] = {}
     for e in events:
         t = e.get("event_type", "unknown")
         a = e.get("story_arc_id", "unknown")
@@ -293,78 +217,19 @@ def print_summary(events_data: dict) -> None:
         print(f"    {count:3d}x  {a}")
     print("─────────────────────────────────────────────────────\n")
 
-def inject_contradictions(
-    skeletons: list[dict],
-    world_state: dict,
-    G,
-) -> list[dict]:
-    """
-    For every active or stalled arc, find an existing skeleton that touches
-    that arc and inject a second skeleton later in the timeline that
-    contradicts a fact from the first one.
 
-    This ensures conflict_resolution QA questions are possible.
-    """
-    from knowledge_graph import GraphValidator
-    validator = GraphValidator(G)
-    unresolved = validator.unresolved_arcs()
+# ── Main ──────────────────────────────────────────────────────────────────────
 
-    contradiction_skeletons = []
-
-    for arc_id in unresolved:
-        arc_skeletons = [
-            s for s in skeletons if s.get("story_arc_id") == arc_id
-        ]
-        if not arc_skeletons:
-            continue
-
-        first = arc_skeletons[0]
-
-        from datetime import datetime, timedelta
-        import random
-        base_ts = datetime.fromisoformat(first["timestamp"])
-        later_ts = base_ts + timedelta(days=random.randint(5, 14))
-
-        contradiction_skeletons.append({
-            "event_id":          f"E_contra_{arc_id}",
-            "timestamp":         later_ts.isoformat(),
-            "primary_entity":    first["primary_entity"],
-            "story_arc_id":      arc_id,
-            "involved_entities": first["involved_entities"],
-            "text":              None,
-            "latent_fact_updates": [],
-            "importance":        None,
-            "_contradiction_of": first["event_id"],
-            "_instruction":      "This event must contradict or revise a fact "
-                                 "established in the earlier event it references. "
-                                 "Same entities, different outcome or status.",
-        })
-
-    all_skeletons = skeletons + contradiction_skeletons
-    all_skeletons.sort(key=lambda s: s["timestamp"])
-    return all_skeletons
-
-def main():
-    from knowledge_graph import load_graph, build_timeline_skeletons
-    from datetime import datetime
-
-    world_state = load_world_state(INPUT_FILE)
-    print(f"Loaded world state: {world_state['user_profile'].get('name')}, "
-          f"{len(world_state.get('entities', []))} entities, "
-          f"{len(world_state.get('story_arcs', []))} arcs")
-
-    G = load_graph(world_state)
-    print("Building event skeletons via knowledge graph...")
-    skeletons = build_timeline_skeletons(
-        G,
-        start_date=datetime(2024, 1, 1, 9, 0),
-        duration_days=10,
-        events_per_day=0.8,
+def main() -> None:
+    world_state = load_world_state()
+    print(
+        f"Loaded world state: {world_state['user_profile'].get('name')}, "
+        f"{len(world_state.get('entities', []))} entities, "
+        f"{len(world_state.get('story_arcs', []))} arcs"
     )
-    print(f"  {len(skeletons)} skeletons generated.")
 
-    skeletons = inject_contradictions(skeletons, world_state, G)
-    print(f"  {len(skeletons)} skeletons after contradiction injection.")
+    print("Building event skeletons via knowledge graph...")
+    skeletons = build_skeletons(world_state)
 
     events_data = generate_events(world_state, skeletons)
 
@@ -376,9 +241,9 @@ def main():
     else:
         print("✓  Validation passed")
 
-    save_events(events_data, OUTPUT_FILE)
+    save_events(events_data)
     print_summary(events_data)
-    print("Stage 02 complete. Next: run stage_03_repair.py")
+    print("Stage 02 complete. Next: python stage_03_repair.py")
 
 
 if __name__ == "__main__":
