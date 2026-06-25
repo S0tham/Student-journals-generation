@@ -66,6 +66,7 @@ def _call_ollama(prompt: str, temperature: float) -> str:
         "prompt": prompt,
         "stream": False,
         "format": "json",
+        "keep_alive": config.OLLAMA_KEEP_ALIVE,
         "options": {
             "num_ctx":     config.MAX_TOKENS,
             "temperature": temperature,
@@ -77,7 +78,7 @@ def _call_ollama(prompt: str, temperature: float) -> str:
         response = requests.post(
             config.OLLAMA_BASE_URL,
             json=payload,
-            timeout=500,
+            timeout=config.OLLAMA_TIMEOUT_SECONDS,
         )
         response.raise_for_status()
         return response.json().get("response", "").strip()
@@ -89,8 +90,8 @@ def _call_ollama(prompt: str, temperature: float) -> str:
         )
     except requests.exceptions.Timeout:
         raise TimeoutError(
-            f"Ollama did not respond within the timeout. "
-            "Try a smaller model or increase the timeout."
+            f"Ollama did not respond within {config.OLLAMA_TIMEOUT_SECONDS}s. "
+            "Try a smaller model or increase OLLAMA_TIMEOUT_SECONDS in config.py."
         )
 
 

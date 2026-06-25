@@ -66,6 +66,8 @@ def _entity_key(entity) -> str:
 
 
 # ── Evidence finders ───────────────────────────────────────────────────────────
+# Each finder returns a list of note-ID groups. The group defines the gold
+# evidence for one QA pair — chosen BEFORE the question is written.
 
 def find_single_hop_seeds(notes: list[dict]) -> list[list[str]]:
     """One note with a clear, answerable fact."""
@@ -173,7 +175,7 @@ def generate_qa_pair(
     qa  = parse_json_response(raw)
 
     qa["question_id"]      = f"q_{index:04d}"
-    qa["supporting_notes"] = note_ids  
+    qa["supporting_notes"] = note_ids  # always override with ground truth
     qa["required_hops"]    = len(note_ids)
     return qa
 

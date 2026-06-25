@@ -71,6 +71,8 @@ def repair_and_validate(events: list[dict], world_state: dict) -> tuple[list[dic
         repaired.append(fixed)
         log.extend(entry)
 
+    # Re-sort by timestamp after repair (out-of-order events are fixed here,
+    # not by the LLM, keeping the process deterministic).
     repaired.sort(key=lambda e: e.get("timestamp", ""))
 
     return repaired, log
@@ -103,6 +105,7 @@ def main() -> None:
 
     repaired, log = repair_and_validate(raw_events, world_state)
 
+    # Post-repair validation
     G         = load_graph(world_state)
     validator = GraphValidator(G)
     warnings  = validator.validate_timeline(repaired)

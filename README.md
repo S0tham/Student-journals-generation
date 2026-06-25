@@ -54,8 +54,8 @@ Set `BACKEND = "anthropic"` in `config.py`.
 
 ```bash
 pip install requests networkx
-ollama serve          # start Ollama
-ollama pull qwen2.5   # or whichever model you set in config.py
+ollama serve            # start Ollama
+ollama pull qwen2.5:72b # matches OLLAMA_MODEL in config.py — swap if you change it there
 ```
 
 `BACKEND = "ollama"` is the default in `config.py` — no changes needed beyond pulling a model.
@@ -72,6 +72,28 @@ ollama pull qwen2.5   # or whichever model you set in config.py
 
 Use at least a 32B model for production runs. The default `qwen2.5` (no size suffix) is the small variant — suitable for testing the pipeline but not for generating high-quality benchmark data.
 
+### Running a 70B model reliably for long jobs
+
+A 90-day simulation makes dozens of LLM calls across all 5 stages, and a 70B model
+can take minutes per call — especially in stage 02, where the full world state and
+all event skeletons are sent in a single prompt. Two Ollama defaults will silently
+break a long run if left unchanged:
+
+**Request timeout.** `config.py` sets `OLLAMA_TIMEOUT_SECONDS = 3600` (1 hour) so a
+slow 70B response is never cut off prematurely by the Python client. If your hardware
+is slower than that, raise this value further — there's no downside to setting it
+higher than you need.
+
+**Model unloading between calls.** By default, Ollama unloads a model from memory
+after 5 minutes of inactivity (`OLLAMA_KEEP_ALIVE`, default `"5m"`). Because stages
+in this pipeline do non-LLM work between calls (graph computation, validation,
+repair), gaps longer than 5 minutes are normal — and without changing this setting,
+Ollama would unload a 70B model between calls and pay an expensive reload (30-60+
+seconds, sometimes longer) on every single request. `config.py` sets
+`OLLAMA_KEEP_ALIVE = -1`, which keeps the model resident in memory for the entire
+life of the `ollama serve` process. Set it back to `"5m"` if this Ollama instance is
+shared with other applications that need the memory freed automatically.
+
 ---
 
 ## Configuration
@@ -82,10 +104,13 @@ All tunable parameters live in `config.py` — this is the only file you need to
 # config.py
 
 BACKEND         = "ollama"          # "ollama" | "anthropic"
-OLLAMA_MODEL    = "qwen2.5"         # e.g. "qwen2.5:32b" for production runs
+OLLAMA_MODEL    = "qwen2.5:72b"     # change to qwen2.5:32b for a lighter run
 ANTHROPIC_MODEL = "claude-opus-4-6"
 
-DURATION_DAYS   = 10                 # length of the simulated event timeline
+OLLAMA_TIMEOUT_SECONDS = 3600        # per-request timeout; raise for slower hardware
+OLLAMA_KEEP_ALIVE      = -1          # keep the model resident between calls
+
+DURATION_DAYS   = 90                 # length of the simulated event timeline
 EVENTS_PER_DAY  = 0.8
 MIN_ENTITIES    = 10
 
@@ -104,13 +129,31 @@ automatically and retries up to `MAX_RETRIES` times on JSON parse failure.
 
 ## Usage
 
-Run the stages in order. Each stage reads the output of the previous one.
+### Unattended run (recommended for long runs)
+
+`run_pipeline.py` runs all 5 stages in order automatically — nobody needs to stay at
+the keyboard. This matters for a 90-day simulation on a 70B model, which can easily
+take several hours end to end.
 
 ```bash
-# Make sure Ollama is running first
-ollama serve
+ollama serve                 # start Ollama first, in a separate terminal/session
+python run_pipeline.py
+```
 
-# Then run each stage
+The runner streams live output to the console and also writes everything to
+`pipeline_run.log`, so you can close the terminal and check progress later by
+reading that file. If a stage fails, the runner stops immediately — it never
+continues to the next stage on broken or missing input — and tells you exactly
+which stage failed and why. Earlier stages do not need to be re-run as long as
+their output files in `data/` are still there; just fix the issue and run
+`python run_pipeline.py` again.
+
+### Manual, stage-by-stage run
+
+Useful when developing or debugging a single stage. Each stage reads the output
+of the previous one.
+
+```bash
 python stage_01_world_state.py
 python stage_02_event_timeline.py
 python stage_03_repair.py
@@ -164,12 +207,14 @@ project/
 ├── config.py                    # Single source of truth: model, backend, paths, parameters
 ├── prompts.py                   # All LLM prompts used across the pipeline
 ├── llm.py                       # Shared call_llm() client with retry logic
+├── run_pipeline.py              # Runs all 5 stages in sequence, unattended
 ├── stage_01_world_state.py      # Generates hidden ground truth
 ├── stage_02_event_timeline.py   # Generates event stream via skeleton + LLM
 ├── stage_03_repair.py           # Graph-based structural repair
 ├── stage_04_note_generation.py  # Converts events to human-like notes
 ├── stage_05_qa_generation.py    # Evidence-first QA generation
 ├── knowledge_graph.py           # Shared graph module (imported by 02 and 03)
+├── pipeline_run.log             # Full log from the last run_pipeline.py run
 └── data/                        # Generated at runtime
     ├── world_state.json
     ├── events_raw.json
@@ -211,3 +256,9 @@ Stage 05 selects supporting notes before writing a question, not after. Gold evi
 
 **MESSINESS_RULES in Stage 04.**
 The note generation prompt applies one to three randomised rules per note (OMISSION, ABRUPT_END, IMPLICIT_REFERENCE, UNCERTAINTY, LATENT_FACT_AS_TEXTURE). These prevent latent facts from being stated directly in notes, which would make retrieval unrealistically easy.
+
+**Unattended sequential runner.**
+`run_pipeline.py` runs all 5 stages as subprocesses in order, stopping immediately if any stage fails rather than continuing on broken input. All output is streamed live to the console and duplicated to `pipeline_run.log`, so a multi-hour run on a 70B model doesn't need to be watched continuously.
+
+**Long-run-safe Ollama defaults.**
+`config.py` sets `OLLAMA_TIMEOUT_SECONDS = 3600` and `OLLAMA_KEEP_ALIVE = -1`. Without these, a 70B model would risk the Python client timing out on a slow response, and Ollama's default 5-minute idle unload would force an expensive model reload between almost every stage in a long pipeline run.
