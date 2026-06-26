@@ -262,3 +262,15 @@ The note generation prompt applies one to three randomised rules per note (OMISS
 
 **Long-run-safe Ollama defaults.**
 `config.py` sets `OLLAMA_TIMEOUT_SECONDS = 3600` and `OLLAMA_KEEP_ALIVE = -1`. Without these, a 70B model would risk the Python client timing out on a slow response, and Ollama's default 5-minute idle unload would force an expensive model reload between almost every stage in a long pipeline run.
+
+## Next Steps
+
+**Evaluating RAG Summarisation Quality**
+
+A highly valuable next step for this project is using the generated datasets to test and evaluate a RAG (Retrieval-Augmented Generation) system's summarisation quality.
+
+Because the pipeline generates a hidden canonical truth containing all entities, story arcs, projects, and latent facts, every piece of generated data is entirely trackable. This strict tracking provides a perfect ground-truth environment to:
+
+-Test Entity Linking: Evaluate how well a RAG model can identify and connect related entities across the generated human-like notes within the retrieval corpus.
+
+-Grade Summarisation Accuracy: Quantitatively score the RAG's ability to synthesise complex event timelines into accurate summaries. Because all parts are explicitly tracked, you can systematically measure how effectively the model links related entities and information without hallucinating or losing context.
